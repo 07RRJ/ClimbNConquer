@@ -91,7 +91,7 @@ class Player:
 # SECTION: ENEMIES
 # ======================================
 
-enemyTypes = ["Slime", "Rat", "Boar"]
+enemyTypes = ["Slime", "Rat", "Boar", "Goblin", "Zombie"]
 
 class Enemies:
     def __init__(self):
@@ -111,6 +111,10 @@ class Enemies:
                     enemy = Rat()
                 elif enemy == "Boar":
                     enemy = Boar()
+                elif enemy == "Goblin":
+                    enemy = Goblin()
+                elif enemy == "Zombie":
+                    enemy = Zombie()
                 generatedEnemies.append(enemy)
             self.current = generatedEnemies
     
@@ -118,10 +122,10 @@ class Enemies:
         self.amountEnemies[0] = self.amountEnemies[1]
         self.amountEnemies[1] = self.amountEnemies[2]
         self.amountEnemies[2] += 1
-        self.possible.append(rng.choice(enemyTypes))
+        self.possible.append(enemyTypes[(gameData.floor + 1) % len(enemyTypes)])
 
 class Slime:
-    TYPE = "slime"
+    TYPE = "Slime"
     def __init__(self, summoned = False):
         floor = gameData.floor + 1
         if summoned:
@@ -142,7 +146,7 @@ class Slime:
             Attack(self.STR, player)
 
 class Rat:
-    TYPE = "rat"
+    TYPE = "Rat"
     def __init__(self):
         floor = gameData.floor + 1
         self.EXP = 2 * floor
@@ -160,7 +164,7 @@ class Rat:
             Attack(self.STR, player)
 
 class Boar:
-    TYPE = "boar"
+    TYPE = "Boar"
     def __init__(self):
         floor = gameData.floor + 1
         self.EXP = 2 * floor
@@ -182,12 +186,81 @@ class Boar:
         elif enemyMove == "BLOCK":
             self.DEF += self.BLOCK
 
+class Goblin:
+    TYPE = "Goblin"
+    def __init__(self):
+        floor = gameData.floor + 1
+        self.EXP = 2 * floor
+        self.MAX_HP = 10 * floor
+        self.HP = 10 * floor
+        self.STR = int(1.5 * floor)
+        self.BLOCK = 5 * floor
+    HEAL = 0
+    DEF = 0
+    ABILITIES = ["PASS", "BLOCK", "ATTACK"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = rng.choice(self.ABILITIES)
+        if enemyMove == "ATTACK":
+            Attack(self.STR, player)
+        elif enemyMove == "BLOCK":
+            self.DEF += self.BLOCK
+
+class Zombie:
+    TYPE = "Zombie"
+    def __init__(self):
+        floor = gameData.floor + 1
+        self.EXP = 2 * floor
+        self.MAX_HP = 10 * floor
+        self.HP = 10 * floor
+        self.STR = int(1.5 * floor)
+        self.BLOCK = 5 * floor
+    HEAL = 0
+    DEF = 0
+    ABILITIES = ["PASS", "BLOCK", "ATTACK"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = rng.choice(self.ABILITIES)
+        if enemyMove == "ATTACK":
+            Attack(self.STR, player)
+        elif enemyMove == "BLOCK":
+            self.DEF += self.BLOCK
+
+# class Zombie:
+#     TYPE = "Zombie"
+#     def __init__(self):
+#         floor = gameData.floor + 1
+#         self.EXP = 2 * floor
+#         self.MAX_HP = 10 * floor
+#         self.HP = 10 * floor
+#         self.STR = int(1.5 * floor)
+#         self.BLOCK = 5 * floor
+#     HEAL = 0
+#     DEF = 0
+#     ABILITIES = ["PASS", "BLOCK", "ATTACK"]
+    
+#     def Move(self):
+#         self.DEF -= self.DEF // 2 + 1
+#         if self.DEF < 0:
+#             self.DEF = 0
+#         enemyMove = rng.choice(self.ABILITIES)
+#         if enemyMove == "ATTACK":
+#             Attack(self.STR, player)
+#         elif enemyMove == "BLOCK":
+#             self.DEF += self.BLOCK
+
 # ======================================
 # SECTION: BOSSES
 # ======================================
 
 class KingSlime:
-    TYPE = "kingslime"
+    TYPE = "King Slime"
     def __init__(self):
         floor = gameData.floor + 1
         self.MAX_HP = 50 * floor
@@ -199,6 +272,114 @@ class KingSlime:
     HEAL = 0
     DEF = 0
     ABILITIES = ["SUMMON", "BLOCK", "PASS"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "BLOCK":
+            self.DEF += self.BLOCK
+        if enemyMove == "SUMMON":
+            slime = Slime(True)
+            enemies.current.append(slime)
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
+
+class RatKing:
+    TYPE = "Rat King"
+    def __init__(self):
+        floor = gameData.floor + 1
+        self.MAX_HP = 50 * floor
+        self.HP = 50 * floor
+        self.STR = 10 * floor
+    EXP =  0
+    MOVE = 0
+    HEAL = 0
+    DEF = 0
+    ABILITIES = ["ATTACK"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "ATTACK":
+            Attack(self.STR, player)
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
+
+class RoyalBoar:
+    TYPE = "Royal Boar"
+    def __init__(self):
+        floor = gameData.floor + 1
+        self.MAX_HP = 50 * floor
+        self.HP = 50 * floor
+        self.BLOCK = 10 * floor
+    STR = 0
+    EXP =  0
+    MOVE = 0
+    HEAL = 0
+    DEF = 0
+    ABILITIES = ["BLOCK", "PASS", "CHARGE", "ATTACK", "ATTACK"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "BLOCK":
+            self.DEF += self.BLOCK
+        if enemyMove == "SUMMON":
+            slime = Slime(True)
+            enemies.current.append(slime)
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
+
+class GoblinGeneral:
+    TYPE = "Goblin General"
+    def __init__(self):
+        floor = gameData.floor + 1
+        self.MAX_HP = 50 * floor
+        self.HP = 50 * floor
+        self.BLOCK = 10 * floor
+    STR = 0
+    EXP =  0
+    MOVE = 0
+    HEAL = 0
+    DEF = 0
+    ABILITIES = ["SUMMON", "BLOCK", "PASS"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "BLOCK":
+            self.DEF += self.BLOCK
+        if enemyMove == "SUMMON":
+            slime = Slime(True)
+            enemies.current.append(slime)
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
+
+class Lich:
+    TYPE = "Lich"
+    def __init__(self):
+        floor = gameData.floor + 1
+        self.MAX_HP = 50 * floor
+        self.HP = 50 * floor
+        self.BLOCK = 10 * floor
+    STR = 0
+    EXP =  0
+    MOVE = 0
+    HEAL = 0
+    DEF = 0
+    ABILITIES = ["SUMMON", "BLOCK", "HEAL", "PASS"]
     
     def Move(self):
         self.DEF -= self.DEF // 2 + 1
@@ -260,7 +441,10 @@ def playFloor():
     while True:
         if enemies.current and player.HP > 0:
             gameData.turn += 1
-            print(f"Floor {gameData.floor + 1}-{gameData.part + 1}, Turn: ({gameData.turn})")
+            if gameData.part != 10:
+                print(f"Floor {gameData.floor + 1}-{gameData.part + 1}, Turn: ({gameData.turn})")
+            else:
+                print(f"Boss battle, Turn: ({gameData.turn})")
             GetEnemyStats()
             player.Move()
 
@@ -288,21 +472,29 @@ def play():
                 if gameData.part < 9:
                     gameData.part += 1
                 else:
+                    gameData.part += 1
                     if gameData.floor % 5 == 0:
                         kingSlime = KingSlime()
                         enemies.current = [kingSlime]
-                        gameData.part = -1
-                        gameData.floor += 1
-                        result = playFloor()
-                        if result == "won":
-                            gameData.part += 1
-                        else:
-                            return "dead"
+                    elif gameData.floor % 5 == 1:
+                        ratKing = RatKing()
+                        enemies.current = [ratKing]
+                    elif gameData.floor % 5 == 2:
+                        royalBoar = RoyalBoar()
+                        enemies.current = [royalBoar]
+                    elif gameData.floor % 5 == 3:
+                        goblinGeneral = GoblinGeneral()
+                        enemies.current = [goblinGeneral]
+                    elif gameData.floor % 5 == 4:
+                        lich = Lich()
+                        enemies.current = [lich]
+                    result = playFloor()
+                    if result == "won":
+                        gameData.part += 1
                     else:
-                        gameData.part = 0
-                        gameData.floor += 1
-                    # elif gameData.floor % 5 == 1:
-                        # pass
+                        return "dead"
+                    gameData.part = 0
+                    gameData.floor += 1
             elif result == "dead":
                 return "dead"
         else:
