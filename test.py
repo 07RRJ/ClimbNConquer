@@ -27,54 +27,75 @@ class Player:
         self.HP = 20
         self.STR = 1
         self.AOE = 1
+        self.MULTI = 2
         self.HEAL = 1
         self.DEF = 0
         self.BLOCK = 3
+        self.BASE_STAMINA = 1
+        self.STAMINA_REGEN = 1
+        self.MAX_STAMINA = 5
         self.STAMINA = 0
+        self.MAX_MANA = 5
+        self.MANA = 0
         self.EXP = 0
         self.NEXT_LVL = 5
         self.LVL = 0
-        self.ABILITIES = ["ATTACK", "AOE", "HEAL", "BLOCK"]
+        self.ABILITIES = [["ATTACK", 1], ["AOE", 3], ["HEAL", 1], ["BLOCK", 1], ["REST", 1]]
+
+    def listStats(self):
+        stats = []
+        print(f"Player:\nHP: ({self.HP}/{self.MAX_HP}), DEF ({self.DEF}/{self.BLOCK}), STAMINA({self.STAMINA}/{self.MAX_STAMINA}), STR: ({self.STR}), HEAL ({self.HEAL}), LVL ({self.LVL}), EXP ({self.EXP}/{self.NEXT_LVL})")
 
     def Move(self):
         player.DEF -= player.DEF // 2 + 1
         if player.DEF < 0:
             player.DEF = 0
-        print(f"Player:\nHP: ({self.HP}/{self.MAX_HP}), DEF ({self.DEF}/{self.BLOCK}), STR: ({self.STR}), HEAL ({self.HEAL}), LVL ({self.LVL}), EXP ({self.EXP}/{self.NEXT_LVL})")
-        for idx, move in enumerate(self.ABILITIES, 1):
-            print(idx, move)
-        move = self.ABILITIES[Limit("your move: ", 0, len(self.ABILITIES) + 1) - 1]
-        print(f"you chose: {move}")
-        if move == "ATTACK":
+        self.listStats()
+        possibleMoves = []
+        moveIdx = 1
+        for move in self.ABILITIES:
+            if move[1] <= self.STAMINA:
+                possibleMoves.append(move)
+                print(f"{moveIdx}: {move[0]}")
+                moveIdx += 1
+        move = possibleMoves[Limit("your move: ", 0, len(possibleMoves) + 1) - 1]
+        print(f"you chose: {move[0]}")
+        if move[0] == "ATTACK":
+            self.STAMINA -= move[1]
             enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
             Attack(self.STR, enemies.current[enemyToAttack])
-            if enemies.current[enemyToAttack].HP <= 0:
-                player.ExpUp(enemies.current[enemyToAttack].EXP)
-                enemies.current.pop(enemyToAttack)
-        elif move == "AOE":
+            enemies.killed()
+        elif move[0] == "AOE":
+            self.STAMINA -= move[1]
             enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
-            Attack(self.STR, enemies.current[enemyToAttack])
+            listToAttack = [[enemyToAttack, 1]]
             for i in range(self.AOE):
                 i += 1
-                try:
-                    Attack(self.STR // i, enemies.current[enemyToAttack - i])
-                except:
-                    pass
-                try:
-                    Attack(self.STR // i, enemies.current[enemyToAttack + i])
-                except:
-                    pass
-                for idx, enemy in enumerate(enemies.current):
-                    if enemy.HP <= 0:
-                        player.ExpUp(enemy.EXP)
-                        enemies.current.pop(idx)
-        elif move == "HEAL":
+                listToAttack.append([enemyToAttack + i, i + 1])
+                listToAttack.append([enemyToAttack - i, i + 1])
+            for attack in listToAttack:
+                if attack[0] >= 0:
+                    if attack[0] <= len(enemies.current):
+                        try:
+                            Attack(self.STR // attack[1], enemies.current[attack[0]])
+                        except:
+                            pass
+            enemies.killed()
+        elif move[0] == "HEAL":
+            self.STAMINA -= move[1]
             if self.HP != self.MAX_HP and self.HP + self.HEAL < self.MAX_HP:
                 self.HP += self.HEAL
             else:
                 self.HP = self.MAX_HP
-        elif move == "BLOCK":
+        elif move[0] == "BLOCK":
+            self.STAMINA -= move[1]
             self.DEF += self.BLOCK
+        elif move[0] == "REST":
+            self.STAMINA -= move[1]
+            self.STAMINA += self.STAMINA_REGEN
+        self.STAMINA += self.STAMINA_REGEN
+        if self.STAMINA > self.MAX_STAMINA:
+            self.STAMINA = self.MAX_STAMINA
 
     def ExpUp(self, exp):
         self.EXP += exp
@@ -117,6 +138,13 @@ class Enemies:
                     enemy = Zombie()
                 generatedEnemies.append(enemy)
             self.current = generatedEnemies
+    
+    def killed(self):
+        for i in range(len(self.current)):
+            for idx, enemy in enumerate(self.current):
+                if enemy.HP <= 0:
+                    player.ExpUp(enemy.EXP)
+                    self.current.pop(idx)
     
     def difficultyUp(self):
         self.amountEnemies[0] = self.amountEnemies[1]
@@ -411,7 +439,6 @@ def Attack(STR, enemy):
     else:
         enemy.HP -= STR
 
-
 def Limit(question, Min, Max):
     while True:
         try:
@@ -438,6 +465,7 @@ def GetEnemyStats():
 def playFloor():
     player.DEF = 0
     gameData.turn = 0
+    player.STAMINA = player.BASE_STAMINA
     while True:
         if enemies.current and player.HP > 0:
             gameData.turn += 1
