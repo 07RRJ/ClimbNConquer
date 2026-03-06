@@ -15,10 +15,8 @@ def get_game_folder():
 
 class GameData:
     def __init__(self):
-        self.floor = 0
-        self.visualF = 1
-        self.part = 0
-        self.visualP = 1
+        self.floor = 1
+        self.part = 1
         self.turn = 0
 
 class Player:
@@ -27,7 +25,7 @@ class Player:
         self.HP = 20
         self.STR = 1
         self.AOE = 1
-        self.MULTI = 2
+        self.MULTI_ATTACK = 5
         self.HEAL = 1
         self.DEF = 0
         self.BLOCK = 3
@@ -40,11 +38,24 @@ class Player:
         self.EXP = 0
         self.NEXT_LVL = 5
         self.LVL = 0
-        self.ABILITIES = [["ATTACK", 1], ["AOE", 3], ["HEAL", 1], ["BLOCK", 1], ["REST", 1]]
+        self.ABILITIES = [["ATTACK", 1], ["AOE", 3], ["MULTI SLAM", 5], ["HEAL", 1], ["BLOCK", 1], ["REST", 0]]
 
     def listStats(self):
-        stats = []
-        print(f"Player:\nHP: ({self.HP}/{self.MAX_HP}), DEF ({self.DEF}/{self.BLOCK}), STAMINA({self.STAMINA}/{self.MAX_STAMINA}), STR: ({self.STR}), HEAL ({self.HEAL}), LVL ({self.LVL}), EXP ({self.EXP}/{self.NEXT_LVL})")
+        stats = [
+            "Player:",
+            "\n" 
+            f"HP: ({self.HP}/{self.MAX_HP})",
+            f", DEF ({self.DEF}/{self.BLOCK})",
+            f", STAMINA({self.STAMINA}/{self.MAX_STAMINA})",
+            f", LVL ({self.LVL})",
+            f", EXP ({self.EXP}/{self.NEXT_LVL})",
+            "\n",
+            f"STR: ({self.STR})",
+            f", HEAL ({self.HEAL})",
+            f", BLOCK ({self.BLOCK})",
+            f", REST ({self.STAMINA_REGEN})"
+        ]
+        print("".join(stats))
 
     def Move(self):
         player.DEF -= player.DEF // 2 + 1
@@ -71,8 +82,8 @@ class Player:
             listToAttack = [[enemyToAttack, 1]]
             for i in range(self.AOE):
                 i += 1
-                listToAttack.append([enemyToAttack + i, i + 1])
-                listToAttack.append([enemyToAttack - i, i + 1])
+                listToAttack.append([enemyToAttack + i, (i + 1) / 1.5])
+                listToAttack.append([enemyToAttack - i, (i + 1) / 1.5])
             for attack in listToAttack:
                 if attack[0] >= 0:
                     if attack[0] <= len(enemies.current):
@@ -81,6 +92,10 @@ class Player:
                         except:
                             pass
             enemies.killed()
+        elif move[0] == "MULTI ATTACK":
+            enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
+            for attack in range(self.MULTI_ATTACK):
+                Attack((self.STR // 2 + self.MULTI_ATTACK))
         elif move[0] == "HEAL":
             self.STAMINA -= move[1]
             if self.HP != self.MAX_HP and self.HP + self.HEAL < self.MAX_HP:
@@ -93,7 +108,7 @@ class Player:
         elif move[0] == "REST":
             self.STAMINA -= move[1]
             self.STAMINA += self.STAMINA_REGEN
-        self.STAMINA += self.STAMINA_REGEN
+        self.STAMINA += 1
         if self.STAMINA > self.MAX_STAMINA:
             self.STAMINA = self.MAX_STAMINA
 
@@ -150,19 +165,19 @@ class Enemies:
         self.amountEnemies[0] = self.amountEnemies[1]
         self.amountEnemies[1] = self.amountEnemies[2]
         self.amountEnemies[2] += 1
-        self.possible.append(enemyTypes[(gameData.floor + 1) % len(enemyTypes)])
+        self.possible.append(enemyTypes[(gameData.floor) % len(enemyTypes)])
 
 class Slime:
     TYPE = "Slime"
     def __init__(self, summoned = False):
-        floor = gameData.floor + 1
+        multi = gameData.floor
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 1 * floor
-        self.MAX_HP = 5 * floor
-        self.HP = 5 * floor
-        self.STR = 1 * floor
+            self.EXP = 1 * multi
+        self.MAX_HP = 5 * multi
+        self.HP = 5 * multi
+        self.STR = 1 * multi
     HEAL = 0
     DEF = 0
     BLOCK = 0
@@ -176,11 +191,11 @@ class Slime:
 class Rat:
     TYPE = "Rat"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.EXP = 2 * floor
-        self.MAX_HP = 5 * floor
-        self.HP = 5 * floor
-        self.STR = 2 * floor
+        multi = gameData.floor
+        self.EXP = 2 * multi
+        self.MAX_HP = 5 * multi
+        self.HP = 5 * multi
+        self.STR = 2 * multi
     HEAL = 0
     DEF = 0
     BLOCK = 0
@@ -194,12 +209,12 @@ class Rat:
 class Boar:
     TYPE = "Boar"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.EXP = 2 * floor
-        self.MAX_HP = 10 * floor
-        self.HP = 10 * floor
-        self.STR = int(1.5 * floor)
-        self.BLOCK = 5 * floor
+        multi = gameData.floor
+        self.EXP = 2 * multi
+        self.MAX_HP = 10 * multi
+        self.HP = 10 * multi
+        self.STR = int(1.5 * multi)
+        self.BLOCK = 5 * multi
     HEAL = 0
     DEF = 0
     ABILITIES = ["PASS", "BLOCK", "ATTACK"]
@@ -217,12 +232,12 @@ class Boar:
 class Goblin:
     TYPE = "Goblin"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.EXP = 2 * floor
-        self.MAX_HP = 10 * floor
-        self.HP = 10 * floor
-        self.STR = int(1.5 * floor)
-        self.BLOCK = 5 * floor
+        multi = gameData.floor
+        self.EXP = 2 * multi
+        self.MAX_HP = 10 * multi
+        self.HP = 10 * multi
+        self.STR = int(1.5 * multi)
+        self.BLOCK = 5 * multi
     HEAL = 0
     DEF = 0
     ABILITIES = ["PASS", "BLOCK", "ATTACK"]
@@ -240,12 +255,12 @@ class Goblin:
 class Zombie:
     TYPE = "Zombie"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.EXP = 2 * floor
-        self.MAX_HP = 10 * floor
-        self.HP = 10 * floor
-        self.STR = int(1.5 * floor)
-        self.BLOCK = 5 * floor
+        multi = gameData.floor
+        self.EXP = 2 * multi
+        self.MAX_HP = 10 * multi
+        self.HP = 10 * multi
+        self.STR = int(1.5 * multi)
+        self.BLOCK = 5 * multi
     HEAL = 0
     DEF = 0
     ABILITIES = ["PASS", "BLOCK", "ATTACK"]
@@ -260,29 +275,6 @@ class Zombie:
         elif enemyMove == "BLOCK":
             self.DEF += self.BLOCK
 
-# class Zombie:
-#     TYPE = "Zombie"
-#     def __init__(self):
-#         floor = gameData.floor + 1
-#         self.EXP = 2 * floor
-#         self.MAX_HP = 10 * floor
-#         self.HP = 10 * floor
-#         self.STR = int(1.5 * floor)
-#         self.BLOCK = 5 * floor
-#     HEAL = 0
-#     DEF = 0
-#     ABILITIES = ["PASS", "BLOCK", "ATTACK"]
-    
-#     def Move(self):
-#         self.DEF -= self.DEF // 2 + 1
-#         if self.DEF < 0:
-#             self.DEF = 0
-#         enemyMove = rng.choice(self.ABILITIES)
-#         if enemyMove == "ATTACK":
-#             Attack(self.STR, player)
-#         elif enemyMove == "BLOCK":
-#             self.DEF += self.BLOCK
-
 # ======================================
 # SECTION: BOSSES
 # ======================================
@@ -290,10 +282,10 @@ class Zombie:
 class KingSlime:
     TYPE = "King Slime"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.MAX_HP = 50 * floor
-        self.HP = 50 * floor
-        self.BLOCK = 10 * floor
+        multi = gameData.floor
+        self.MAX_HP = 50 * multi
+        self.HP = 50 * multi
+        self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
     MOVE = 0
@@ -318,10 +310,10 @@ class KingSlime:
 class RatKing:
     TYPE = "Rat King"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.MAX_HP = 50 * floor
-        self.HP = 50 * floor
-        self.STR = 10 * floor
+        multi = gameData.floor
+        self.MAX_HP = 50 * multi
+        self.HP = 50 * multi
+        self.STR = 10 * multi
     EXP =  0
     MOVE = 0
     HEAL = 0
@@ -342,10 +334,10 @@ class RatKing:
 class RoyalBoar:
     TYPE = "Royal Boar"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.MAX_HP = 50 * floor
-        self.HP = 50 * floor
-        self.BLOCK = 10 * floor
+        multi = gameData.floor
+        self.MAX_HP = 50 * multi
+        self.HP = 50 * multi
+        self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
     MOVE = 0
@@ -370,10 +362,10 @@ class RoyalBoar:
 class GoblinGeneral:
     TYPE = "Goblin General"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.MAX_HP = 50 * floor
-        self.HP = 50 * floor
-        self.BLOCK = 10 * floor
+        multi = gameData.floor
+        self.MAX_HP = 50 * multi
+        self.HP = 50 * multi
+        self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
     MOVE = 0
@@ -398,10 +390,10 @@ class GoblinGeneral:
 class Lich:
     TYPE = "Lich"
     def __init__(self):
-        floor = gameData.floor + 1
-        self.MAX_HP = 50 * floor
-        self.HP = 50 * floor
-        self.BLOCK = 10 * floor
+        multi = gameData.floor
+        self.MAX_HP = 50 * multi
+        self.HP = 50 * multi
+        self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
     MOVE = 0
@@ -470,7 +462,7 @@ def playFloor():
         if enemies.current and player.HP > 0:
             gameData.turn += 1
             if gameData.part != 10:
-                print(f"Floor {gameData.floor + 1}-{gameData.part + 1}, Turn: ({gameData.turn})")
+                print(f"Floor {gameData.floor}-{gameData.part}, Turn: ({gameData.turn})")
             else:
                 print(f"Boss battle, Turn: ({gameData.turn})")
             GetEnemyStats()
@@ -491,29 +483,29 @@ runing = True
 def play():
     result = ""
     while result != "dead":
-        if gameData.floor < 5:
+        if gameData.floor < 6:
             enemies.generate()
             result = playFloor()
             if result == "won":
-                if gameData.part == 4:
+                if gameData.part == 5:
                     enemies.difficultyUp()
-                if gameData.part < 9:
+                if gameData.part < 10:
                     gameData.part += 1
                 else:
                     gameData.part += 1
-                    if gameData.floor % 5 == 0:
+                    if gameData.floor % 5 == 1:
                         kingSlime = KingSlime()
                         enemies.current = [kingSlime]
-                    elif gameData.floor % 5 == 1:
+                    elif gameData.floor % 5 == 2:
                         ratKing = RatKing()
                         enemies.current = [ratKing]
-                    elif gameData.floor % 5 == 2:
+                    elif gameData.floor % 5 == 3:
                         royalBoar = RoyalBoar()
                         enemies.current = [royalBoar]
-                    elif gameData.floor % 5 == 3:
+                    elif gameData.floor % 5 == 4:
                         goblinGeneral = GoblinGeneral()
                         enemies.current = [goblinGeneral]
-                    elif gameData.floor % 5 == 4:
+                    elif gameData.floor % 5 == 0:
                         lich = Lich()
                         enemies.current = [lich]
                     result = playFloor()
@@ -521,7 +513,7 @@ def play():
                         gameData.part += 1
                     else:
                         return "dead"
-                    gameData.part = 0
+                    gameData.part = 1
                     gameData.floor += 1
             elif result == "dead":
                 return "dead"
@@ -537,7 +529,7 @@ while True:
     if result == "won":
         print("you won")
     else:
-        print(f"you died, floor: ({gameData.floor + 1}-{gameData.part + 1})")
+        print(f"you died, floor: ({gameData.floor}-{gameData.part})")
     print("play again (y/n):")
     while getwch().lower() != "y":
         pass

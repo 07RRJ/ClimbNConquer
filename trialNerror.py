@@ -1,4 +1,4 @@
-from msvcrt import getwch
+# from msvcrt import getwch
 
 # variable = getwch()
 # print(variable)
@@ -36,25 +36,46 @@ from msvcrt import getwch
 #     print(DEF)
 #     DEF -= DEF // 2 + 1
 
-list = [5]
+# ====================================================================
 
-aoe = 1
-str = 1
+# list = [100 for _ in range(11)]
+
+# aoe = 5
+# str = 100
+
+# toAttack = int(input("to attack: "))
+
+# listToAttack = [[toAttack, 1]]
+# for i in range(aoe):
+#     i += 1
+#     listToAttack.append([toAttack + i, (i + 1) / 1.5])
+#     listToAttack.append([toAttack - i, (i + 1) / 1.5])
+# for attack in listToAttack:
+#     if attack[0] >= 0:
+#         if attack[0] <= len(list):
+#             try:
+#                 list[attack[0]] -= int(str / attack[1])
+#             except:
+#                 print(f"couldnt attack idx: {attack[0]}")
+#         else:
+#             print("failed attack")
+#     else:
+#         print("failed attack")
+
+# print(f"attacks: {listToAttack}")
+# print(f"enemies: {list}")
+
+# ====================================================================
+
+list = [100 for _ in range(11)]
+
+str = 20
+multi = 3
 
 toAttack = int(input("to attack: "))
 
-listToAttack = [[toAttack, 1]]
-for i in range(aoe):
-    i += 1
-    listToAttack.append([toAttack + i, i + 1])
-    listToAttack.append([toAttack - i, i + 1])
-for attack in listToAttack:
-    if attack[0] >= 0:
-        if attack[0] <= len(list):
-            try:
-                list[attack[0]] -= str // attack[1]
-            except:
-                print(f"couldnt attack idx: {attack[0]}")
+for attack in range(multi):
+    list[toAttack] -= str // 1.2 * (attack + 2)
+    print(list[toAttack], str // 1.2 * (attack + 2))
 
-print(listToAttack)
 print(list)
