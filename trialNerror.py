@@ -75,7 +75,7 @@ multi = 3
 toAttack = int(input("to attack: "))
 
 for attack in range(multi):
-    list[toAttack] -= str // 1.2 * (attack + 2)
-    print(list[toAttack], str // 1.2 * (attack + 2))
+    list[toAttack] -= str // 2 * (attack + 2)
+    print(list[toAttack], str // 2 * (attack + 2))
 
 print(list)

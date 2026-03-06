@@ -33,7 +33,7 @@ class Player:
         self.HEAL = 1
         self.DEF = 0
         self.BLOCK = 3
-        self.BASE_STAMINA = 1
+        self.BASE_STAMINA = 5
         self.STAMINA_REGEN = 1
         self.MAX_STAMINA = 5
         self.STAMINA = 0
@@ -74,7 +74,6 @@ class Player:
                 print(f"{moveIdx}: {move[0]}")
                 moveIdx += 1
         move = possibleMoves[Limit("your move: ", 0, len(possibleMoves) + 1) - 1]
-        print(f"you chose: {move[0]}")
         if move[0] == "ATTACK":
             self.STAMINA -= move[1]
             enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
@@ -92,14 +91,15 @@ class Player:
                 if attack[0] >= 0:
                     if attack[0] <= len(enemies.current):
                         try:
-                            Attack(self.STR // attack[1], enemies.current[attack[0]])
+                            Attack(int(self.STR / attack[1]), enemies.current[attack[0]])
                         except:
                             pass
             enemies.killed()
-        elif move[0] == "MULTI ATTACK":
+        elif move[0] == "MULTI SLAM":
             enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
             for attack in range(self.MULTI_ATTACK):
-                Attack((self.STR // 2 + self.MULTI_ATTACK))
+                Attack(max(int(self.STR // 2 * (attack + 2)), 1), enemies.current[enemyToAttack])
+            enemies.killed()
         elif move[0] == "HEAL":
             self.STAMINA -= move[1]
             if self.HP != self.MAX_HP and self.HP + self.HEAL < self.MAX_HP:
@@ -319,6 +319,7 @@ class RatKing:
         self.MAX_HP = 50 * multi
         self.HP = 50 * multi
         self.STR = 10 * multi
+    BLOCK = 0
     EXP =  0
     MOVE = 0
     HEAL = 0
@@ -425,16 +426,18 @@ class Lich:
 # ======================================
 
 def Attack(STR, enemy):
-    if STR >= enemy.DEF + enemy.HP:
-        enemy.DEF = 0
-        enemy.HP = 0
-    elif enemy.DEF:
-        enemy.DEF -= STR
-        if enemy.DEF < 0:
-            enemy.HP += enemy.DEF
+    if STR:
+        print(STR)
+        if STR >= enemy.DEF + enemy.HP:
             enemy.DEF = 0
-    else:
-        enemy.HP -= STR
+            enemy.HP = 0
+        elif enemy.DEF:
+            enemy.DEF -= STR
+            if enemy.DEF < 0:
+                enemy.HP += enemy.DEF
+                enemy.DEF = 0
+        else:
+            enemy.HP -= STR
 
 def Limit(question, Min, Max):
     while True:
