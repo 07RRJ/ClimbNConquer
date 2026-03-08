@@ -1,7 +1,7 @@
 import os, sys
 import random as rng
 from msvcrt import getwch
-from time import sleep
+import time
 
 # ======================================
 # SECTION: BASE
@@ -15,8 +15,10 @@ def get_game_folder():
 
 class GameData:
     def __init__(self):
+        self.startTime = time.time()
         self.floor = 1
         self.part = 1
+        self.totalTurns = 0
         self.turn = 0
         self.enemiesKilled = {
             "Slime": 0, "Rat": 0, "Boar": 0, "Goblin": 0, "Zombie": 0,
@@ -27,22 +29,27 @@ class Player:
     def __init__(self):
         self.MAX_HP = 20
         self.HP = 20
+        self.HEAL = 3
+
+        self.DEF = 0
+        self.BLOCK = 3
+
         self.STR = 1
         self.AOE = 1
         self.MULTI_ATTACK = 5
-        self.HEAL = 1
-        self.DEF = 0
-        self.BLOCK = 3
+
         self.BASE_STAMINA = 5
         self.STAMINA_REGEN = 1
         self.MAX_STAMINA = 5
         self.STAMINA = 0
+
         self.MAX_MANA = 5
         self.MANA = 0
+
         self.EXP = 0
         self.NEXT_LVL = 5
         self.LVL = 0
-        self.ABILITIES = [["ATTACK", 1], ["AOE", 3], ["MULTI SLAM", 5], ["HEAL", 1], ["BLOCK", 1], ["REST", 0]]
+        self.ABILITIES = [["ATTACK", 1, True], ["AOE", 3, "King Slime"], ["MULTI SLAM", 5, "Rat King"], ["HEAL", 1, True], ["BLOCK", 1, True], ["REST", 0, True]]
 
     def listStats(self):
         stats = [
@@ -70,9 +77,10 @@ class Player:
         moveIdx = 1
         for move in self.ABILITIES:
             if move[1] <= self.STAMINA:
-                possibleMoves.append(move)
-                print(f"{moveIdx}: {move[0]}")
-                moveIdx += 1
+                if move[2] == True or gameData.enemiesKilled[move[2]] != 0:
+                    possibleMoves.append(move)
+                    print(f"{moveIdx}: {move[0]}")
+                    moveIdx += 1
         move = possibleMoves[Limit("your move: ", 0, len(possibleMoves) + 1) - 1]
         if move[0] == "ATTACK":
             self.STAMINA -= move[1]
@@ -122,10 +130,28 @@ class Player:
             self.EXP -= self.NEXT_LVL
             self.LVL += 1
             self.NEXT_LVL += self.LVL
-            self.STR += 1
-            self.MAX_HP += 1
-            self.BLOCK += 1
-            self.HEAL += 1
+            for i in range(3):
+                cls()
+                print(f"You leveled up ({self.LVL - 1} > {self.LVL}), choose stat to increase, pts: ({3-i}/3):")
+                lvlUpList = [
+                    ("Max HP", "MAX_HP", 2),
+                    ("Heal", "HEAL", 1),
+                    ("Block", "BLOCK", 2),
+                    ("Strength", "STR", 1),
+                    ("Max Stamina", "MAX_STAMINA", 1),
+                    ("Start Stamina", "BASE_STAMINA", 0.1),
+                    ("Stamina Regen", "STAMINA_REGEN", 0.1),
+                    ("Max Mana", "MAX_MANA", 1),
+                    ("Start Mana", "MANA", 1),
+                ]
+                for idx, (label, attrName, increse) in enumerate(lvlUpList, 1):
+                    current = getattr(self, attrName)
+                    print(f"({idx}) {label}: {current} + {increse}")
+
+                choice = Limit(f"Stat to increse (1 - {len(lvlUpList)}): ", 0, len(lvlUpList)) - 1
+                label, attr_name, increse = lvlUpList[choice]
+                current = getattr(self, attr_name)
+                setattr(self, attr_name, current + increse)
 
 # ======================================
 # SECTION: ENEMIES
@@ -137,7 +163,7 @@ class Enemies:
     def __init__(self):
         self.current = []
         self.possible = ["Slime"]
-        self.amountEnemies = [1, 1, 1]
+        self.amountEnemies = [2, 2, 1]
 
     def generate(self):
         if not self.current:
@@ -180,13 +206,16 @@ class Slime:
             self.EXP = 0
         else:
             self.EXP = 1 * multi
-        self.MAX_HP = 5 * multi
-        self.HP = 5 * multi
+        
+        self.MAX_HP = 10 * multi
+        self.HP = 10 * multi
+        self.HEAL = 0
+
+        self.DEF = 0
+        self.BLOCK = 1
+
         self.STR = 1 * multi
-    HEAL = 0
-    DEF = 0
-    BLOCK = 0
-    ABILITIES = ["ATTACK", "PASS"]
+        self.ABILITIES = ["ATTACK", "PASS"]
 
     def Move(self):
         enemyMove = rng.choice(self.ABILITIES)
@@ -195,9 +224,12 @@ class Slime:
 
 class Rat:
     TYPE = "Rat"
-    def __init__(self):
+    def __init__(self, summoned = False):
         multi = gameData.floor
-        self.EXP = 2 * multi
+        if summoned:
+            self.EXP = 0
+        else:
+            self.EXP = 2 * multi
         self.MAX_HP = 5 * multi
         self.HP = 5 * multi
         self.STR = 2 * multi
@@ -238,7 +270,7 @@ class Goblin:
     TYPE = "Goblin"
     def __init__(self):
         multi = gameData.floor
-        self.EXP = 2 * multi
+        self.EXP = 3 * multi
         self.MAX_HP = 10 * multi
         self.HP = 10 * multi
         self.STR = int(1.5 * multi)
@@ -261,7 +293,7 @@ class Zombie:
     TYPE = "Zombie"
     def __init__(self):
         multi = gameData.floor
-        self.EXP = 2 * multi
+        self.EXP = 4 * multi
         self.MAX_HP = 10 * multi
         self.HP = 10 * multi
         self.STR = int(1.5 * multi)
@@ -324,7 +356,7 @@ class RatKing:
     MOVE = 0
     HEAL = 0
     DEF = 0
-    ABILITIES = ["ATTACK"]
+    ABILITIES = ["ATTACK", "ATTACK", "PASS"]
     
     def Move(self):
         self.DEF -= self.DEF // 2 + 1
@@ -458,6 +490,31 @@ def GetEnemyStats():
     for enemy in stats:
         print(enemy)
 
+def GetTime(sec, endTime = False):
+    if endTime:
+        sec = int(endTime - sec)
+    min = 0
+    hours = 0
+    days = 0
+    while sec >= 60:
+        sec -= 60
+        min += 1
+        while min >= 60:
+            min -= 60
+            hours += 1
+            while hours >= 24:
+                hours -= 24
+                days += 1
+
+    if days:
+        return f"days: {days}, {hours:02d}:{min:02d}:{sec:02d}"
+    elif hours:
+        return f"{hours:02d}:{min:02d}:{sec:02d} hours"
+    elif min:
+        return f"{min:02d}:{sec:02d} minutes"
+    else:
+        return f"{sec} seconds"
+
 # ======================================
 # SECTION: THE GAME LOOP STUFF
 # ======================================
@@ -469,7 +526,7 @@ def playFloor():
     while True:
         if enemies.current and player.HP > 0:
             gameData.turn += 1
-            if gameData.part != 10:
+            if gameData.part != 0:
                 print(f"Floor {gameData.floor}-{gameData.part}, Turn: ({gameData.turn})")
             else:
                 print(f"Boss battle, Turn: ({gameData.turn})")
@@ -481,6 +538,7 @@ def playFloor():
                 enemy.Move()
 
             cls()
+        gameData.totalTurns += gameData.turn
         if not enemies.current:
             return "won"
         elif player.HP <= 0:
@@ -501,19 +559,21 @@ def play():
                     gameData.part += 1
                 else:
                     gameData.part += 1
-                    if gameData.floor % 5 == 1:
+                    gameData.part = 0
+                    gameData.floor += 1
+                    if gameData.floor % 5 == 2:
                         kingSlime = KingSlime()
                         enemies.current = [kingSlime]
-                    elif gameData.floor % 5 == 2:
+                    elif gameData.floor % 5 == 3:
                         ratKing = RatKing()
                         enemies.current = [ratKing]
-                    elif gameData.floor % 5 == 3:
+                    elif gameData.floor % 5 == 4:
                         royalBoar = RoyalBoar()
                         enemies.current = [royalBoar]
-                    elif gameData.floor % 5 == 4:
+                    elif gameData.floor % 5 == 0:
                         goblinGeneral = GoblinGeneral()
                         enemies.current = [goblinGeneral]
-                    elif gameData.floor % 5 == 0:
+                    elif gameData.floor % 5 == 1:
                         lich = Lich()
                         enemies.current = [lich]
                     result = playFloor()
@@ -522,7 +582,6 @@ def play():
                     else:
                         return "dead"
                     gameData.part = 1
-                    gameData.floor += 1
             elif result == "dead":
                 return "dead"
         else:
@@ -535,9 +594,9 @@ while True:
     gameData = GameData()
     result = play()
     if result == "won":
-        print("you won")
+        print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
     else:
-        print(f"you died, floor: ({gameData.floor}-{gameData.part})\nEnemies killed:")
+        print(f"you died, floor: ({gameData.floor}-{gameData.part}), total turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}\nEnemies killed:")
         print("=" * 22)
         for enemy in gameData.enemiesKilled:
             print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
