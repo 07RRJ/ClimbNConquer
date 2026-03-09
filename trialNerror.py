@@ -67,13 +67,20 @@
 
 # ====================================================================
 
-exp = 5
-totExp = 5
+# list = []
 
-for lvl in range(1, 50):
-    exp += lvl
-    totExp += exp
-    print(totExp, exp)
+# if list:
+#     print("yes")
+# else:
+#     print("no")
+
+# exp = 5
+# totExp = 5
+
+# for lvl in range(1, 50):
+#     exp += lvl
+#     totExp += exp
+#     print(totExp, exp)
 
 # list = [100 for _ in range(11)]
 
@@ -86,7 +93,7 @@ for lvl in range(1, 50):
 #     list[toAttack] -= str // 2 * (attack + 2)
 #     print(list[toAttack], str // 2 * (attack + 2))
 
-print(list)
+# print(list)
 
 # import time
 

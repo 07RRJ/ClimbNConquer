@@ -124,8 +124,7 @@ class Player:
         if self.STAMINA > self.MAX_STAMINA:
             self.STAMINA = self.MAX_STAMINA
 
-    def ExpUp(self, exp):
-        self.EXP += exp
+    def ExpUp(self):
         while self.EXP >= self.NEXT_LVL:
             self.EXP -= self.NEXT_LVL
             self.LVL += 1
@@ -191,7 +190,7 @@ class Enemies:
         for i in range(len(self.current)):
             for idx, enemy in enumerate(self.current):
                 if enemy.HP <= 0:
-                    player.ExpUp(enemy.EXP)
+                    player.EXP += enemy.EXP
                     gameData.enemiesKilled[enemy.TYPE] += 1
                     self.current.pop(idx)
     
@@ -292,9 +291,9 @@ class Goblin:
         self.HEAL = 1
 
         self.DEF = 0
-        self.BLOCK = 1
+        self.BLOCK = int(5 * multi)
     
-        self.STR = 4 + int(4 * multi)
+        self.STR = 1 + int(1 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
 
     def Move(self):
@@ -305,7 +304,9 @@ class Goblin:
         if enemyMove == "ATTACK":
             Attack(self.STR, player)
         elif enemyMove == "BLOCK":
-            self.DEF += self.BLOCK
+            for enemy in enemies.current:
+                if enemy.TYPE == "GOBLIN":
+                    self.DEF += self.BLOCK
 
 class Zombie:
     TYPE = "Zombie"
@@ -324,7 +325,7 @@ class Zombie:
         self.BLOCK = 1
 
         self.STR = 2 + int(2 * multi)
-        self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
+        self.ABILITIES = ["PASS", "BLOCK"]
     
     def Move(self):
         self.DEF -= self.DEF // 2 + 1
@@ -332,9 +333,11 @@ class Zombie:
             self.DEF = 0
         enemyMove = rng.choice(self.ABILITIES)
         if enemyMove == "ATTACK":
-            Attack(self.STR, player)
-        elif enemyMove == "BLOCK":
-            self.DEF += self.BLOCK
+            amountOfZombies = 0
+            for enemy in enemies.current:
+                if enemy.TYPE == "ZOMBIE":
+                    amountOfZombies += 1
+            Attack(self.STR + amountOfZombies, player)
 
 # ======================================
 # SECTION: BOSSES
@@ -598,6 +601,7 @@ def playFloor():
             cls()
         gameData.totalTurns += gameData.turn
         if not enemies.current:
+            player.ExpUp()
             return "won"
         elif player.HP <= 0:
             return "dead"
@@ -605,43 +609,42 @@ def playFloor():
 runing = True
 
 def play():
-    result = ""
-    while result != "dead":
-        if gameData.floor < 6:
-            enemies.generate()
-            result = playFloor()
-            if result == "won":
-                if gameData.part == 5:
-                    enemies.difficultyUp()
-                if gameData.part < 10:
+    endless = False
+    while True:
+        if endless or gameData.floor < 6:
+            if gameData.part > 10:
+                gameData.part = 0
+                if gameData.floor % 5 == 1:
+                    kingSlime = KingSlime()
+                    enemies.current = [kingSlime]
+                elif gameData.floor % 5 == 2:
+                    ratKing = RatKing()
+                    enemies.current = [ratKing]
+                elif gameData.floor % 5 == 3:
+                    royalBoar = RoyalBoar()
+                    enemies.current = [royalBoar]
+                elif gameData.floor % 5 == 4:
+                    goblinGeneral = GoblinGeneral()
+                    enemies.current = [goblinGeneral]
+                elif gameData.floor % 5 == 0:
+                    lich = Lich()
+                    enemies.current = [lich]
+                result = playFloor()
+                gameData.floor += 1
+                gameData.part += 1
+                if result == "won":
                     gameData.part += 1
                 else:
-                    gameData.part = 0
-                    if gameData.floor % 5 == 1:
-                        kingSlime = KingSlime()
-                        enemies.current = [kingSlime]
-                    elif gameData.floor % 5 == 2:
-                        ratKing = RatKing()
-                        enemies.current = [ratKing]
-                    elif gameData.floor % 5 == 3:
-                        royalBoar = RoyalBoar()
-                        enemies.current = [royalBoar]
-                    elif gameData.floor % 5 == 4:
-                        goblinGeneral = GoblinGeneral()
-                        enemies.current = [goblinGeneral]
-                    elif gameData.floor % 5 == 0:
-                        lich = Lich()
-                        enemies.current = [lich]
-                    result = playFloor()
-                    gameData.floor += 1
-                    gameData.part += 1
-                    if result == "won":
-                        gameData.part += 1
-                    else:
-                        return "dead"
-                    gameData.part = 1
-            elif result == "dead":
+                    return "dead"
+                gameData.part = 1
+            if not enemies.current:
+                enemies.generate()
+            result = playFloor()
+            gameData.part += 1
+            if result == "dead":
                 return "dead"
+            elif gameData.part == 5:
+                enemies.difficultyUp()
         else:
             return "won"
 
