@@ -67,10 +67,18 @@
 
 # ====================================================================
 
+exp = 5
+totExp = 5
+
+for lvl in range(1, 50):
+    exp += lvl
+    totExp += exp
+    print(totExp, exp)
+
 # list = [100 for _ in range(11)]
 
-# str = 20
-# multi = 3
+# str = 25
+# multi = 5
 
 # toAttack = int(input("to attack: "))
 
@@ -78,7 +86,7 @@
 #     list[toAttack] -= str // 2 * (attack + 2)
 #     print(list[toAttack], str // 2 * (attack + 2))
 
-# print(list)
+print(list)
 
 # import time
 
@@ -88,25 +96,25 @@
 
 # print(time.time() - start)
 
-runTime = 11111111111
-min = 0
-hours = 0
-days = 0
-while runTime >= 60:
-    runTime -= 60
-    min += 1
-    while min >= 60:
-        min -= 60
-        hours += 1
-        while hours >= 24:
-            hours -= 24
-            days += 1
+# runTime = 11111111111
+# min = 0
+# hours = 0
+# days = 0
+# while runTime >= 60:
+#     runTime -= 60
+#     min += 1
+#     while min >= 60:
+#         min -= 60
+#         hours += 1
+#         while hours >= 24:
+#             hours -= 24
+#             days += 1
 
-if days:
-    print(f"days: {days}, {hours:02d}:{min:02d}:{runTime:02d}")
-elif hours:
-    print(f"{hours:02d}:{min:02d}:{runTime:02d}")
-elif min:
-    print(f"{min:02d}:{runTime:02d}")
-else:
-    print(f"{runTime:02d}")
+# if days:
+#     print(f"days: {days}, {hours:02d}:{min:02d}:{runTime:02d}")
+# elif hours:
+#     print(f"{hours:02d}:{min:02d}:{runTime:02d}")
+# elif min:
+#     print(f"{min:02d}:{runTime:02d}")
+# else:
+#     print(f"{runTime:02d}")

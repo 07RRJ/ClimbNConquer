@@ -130,24 +130,28 @@ class Player:
             self.EXP -= self.NEXT_LVL
             self.LVL += 1
             self.NEXT_LVL += self.LVL
-            cls()
-            print(f"You leveled up ({self.LVL - 1} > {self.LVL}), choose stat to increase:")
-            lvlUpList = [
-                ("Max HP", "MAX_HP", 2),
-                ("Heal", "HEAL", 1),
-                ("Block", "BLOCK", 2),
-                ("Strength", "STR", 1),
-                ("Max Stamina", "MAX_STAMINA", 1),
-                ("Start Stamina", "BASE_STAMINA", 0.2),
-                ("Stamina Regen", "STAMINA_REGEN", 0.2),
-                ("Max Mana", "MAX_MANA", 1),
-                ("Start Mana", "MANA", 1),
-            ]
-            for idx, (label, attrName, increse) in enumerate(lvlUpList, 1):
-                current = getattr(self, attrName)
-                print(f"({idx}) {label}: {current} + {increse}")
+            while True:
+                cls()
+                print(f"You leveled up ({self.LVL - 1} > {self.LVL}), choose stat to increase:")
+                lvlUpList = [
+                    ("Max HP", "MAX_HP", 2),
+                    ("Heal", "HEAL", 1),
+                    ("Block", "BLOCK", 2),
+                    ("Strength", "STR", 1),
+                    ("Max Stamina", "MAX_STAMINA", 1),
+                    ("Start Stamina", "BASE_STAMINA", 0.2),
+                    ("Stamina Regen", "STAMINA_REGEN", 0.2),
+                    ("Max Mana", "MAX_MANA", 1),
+                    ("Start Mana", "MANA", 1),
+                ]
+                for idx, (label, attrName, increse) in enumerate(lvlUpList, 1):
+                    current = getattr(self, attrName)
+                    print(f"({idx}) {label}: {current} + {increse}")
 
-            choice = Limit(f"Stat to increse (1 - {len(lvlUpList)}): ", 0, len(lvlUpList)) - 1
+                choice = Limit(f"Stat to increse (1 - {len(lvlUpList)}): ", 0, len(lvlUpList)) - 1
+                print("comfirm (y)")
+                if getwch().lower() == "y":
+                    break
             label, attr_name, increse = lvlUpList[choice]
             current = getattr(self, attr_name)
             setattr(self, attr_name, current + increse)
@@ -200,20 +204,20 @@ class Enemies:
 class Slime:
     TYPE = "Slime"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 1 + 1 * multi
+            self.EXP = 1 + int(1 * multi)
         
-        self.MAX_HP = 5 + 5 * multi
+        self.MAX_HP = 4 + int(3 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
 
         self.DEF = 0
         self.BLOCK = 1
 
-        self.STR = 1 + 1 * multi
+        self.STR = 1 + int(1 * multi)
         self.ABILITIES = ["ATTACK", "PASS"]
 
     def Move(self):
@@ -224,20 +228,20 @@ class Slime:
 class Rat:
     TYPE = "Rat"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 2 + 2 * multi
+            self.EXP = 2 + int(2 * multi)
         
-        self.MAX_HP = 5 + 5 * multi
+        self.MAX_HP = 3 + int(3 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
         
         self.DEF = 0
         self.BLOCK = 1
 
-        self.STR = 2 + 2 * multi
+        self.STR = 2 + int(multi)
         self.ABILITIES = ["ATTACK"]
 
     def Move(self):
@@ -248,18 +252,18 @@ class Rat:
 class Boar:
     TYPE = "Boar"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 2 + 2 * multi
+            self.EXP = 2 + int(2 * multi)
         
-        self.MAX_HP = 10 + 10 * multi
+        self.MAX_HP = 5 + int(5 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
 
         self.DEF = 0
-        self.BLOCK = 2 * multi
+        self.BLOCK = 2 + int(2 * multi)
 
         self.STR = int(1.5 + 1.5 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
@@ -277,20 +281,20 @@ class Boar:
 class Goblin:
     TYPE = "Goblin"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 3 + 3 * multi
+            self.EXP = 3 + int(3 * multi)
         
-        self.MAX_HP = 10 * multi
+        self.MAX_HP = 10 + int(10 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
 
         self.DEF = 0
         self.BLOCK = 1
     
-        self.STR = 4 + 4 * multi
+        self.STR = 4 + int(4 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
 
     def Move(self):
@@ -306,20 +310,20 @@ class Goblin:
 class Zombie:
     TYPE = "Zombie"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 4 * multi
+            self.EXP = 4 + int(4 * multi)
 
-        self.MAX_HP = 10 * multi
+        self.MAX_HP = 15 + int(15 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
         
         self.DEF = 0
-        self.BLOCK = 5 * multi
+        self.BLOCK = 1
 
-        self.STR = int(1.5 * multi)
+        self.STR = 2 + int(2 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
     
     def Move(self):
@@ -339,20 +343,20 @@ class Zombie:
 class KingSlime:
     TYPE = "King Slime"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP =  20 + 20 * multi
+            self.EXP =  10 + int(20 * multi)
         
-        self.MAX_HP = 50 + 50 * multi
+        self.MAX_HP = 25 + int(50 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
 
         self.DEF = 0
-        self.BLOCK = 10 + 10 * multi
+        self.BLOCK = 5 + int(10 * multi)
         
-        self.STR = 0
+        self.STR = 1
         self.MOVE = 0
         self.ABILITIES = ["SUMMON", "BLOCK", "PASS", "PASS"]
     
@@ -373,13 +377,13 @@ class KingSlime:
 class RatKing:
     TYPE = "Rat King"
     def __init__(self, summoned = False):
-        multi = int(gameData.floor / 2)
+        multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 20 + 20 * multi
+            self.EXP = 10 + int(20 * multi)
         
-        self.MAX_HP = 50 + 50 * multi
+        self.MAX_HP = max(50, int(50 * multi))
         self.HP = self.MAX_HP
         self.HEAL = 1
         
@@ -387,7 +391,7 @@ class RatKing:
         self.BLOCK = 1
         
         self.MOVE = 0
-        self.STR = 5 + 5 * multi
+        self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
     
     def Move(self):
@@ -403,12 +407,98 @@ class RatKing:
 
 class RoyalBoar:
     TYPE = "Royal Boar"
+    def __init__(self, summoned = False):
+        multi = gameData.floor / 2
+        if summoned:
+            self.EXP = 0
+        else:
+            self.EXP = 10 + int(20 * multi)
+        
+        self.MAX_HP = 50 + int(50 * multi)
+        self.HP = self.MAX_HP
+        self.HEAL = 1
+        
+        self.DEF = 0
+        self.BLOCK = 10 + int(10 * multi)
+        
+        self.MOVE = 0
+        self.STR = 5 + int(5 * multi)
+        self.ABILITIES = ["PASS", "BLOCK", "ATTACK", "ATTACK"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "ATTACK":
+            Attack(self.STR, player)
+        if enemyMove == "BLOCK":
+            self.DEF += self.BLOCK
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
 
 class GoblinGeneral:
     TYPE = "Goblin General"
+    def __init__(self, summoned = False):
+        multi = gameData.floor / 2
+        if summoned:
+            self.EXP = 0
+        else:
+            self.EXP = 10 + int(20 * multi)
+        
+        self.MAX_HP = 50 + int(50 * multi)
+        self.HP = self.MAX_HP
+        self.HEAL = 1
+        
+        self.DEF = 0
+        self.BLOCK = 1
+        
+        self.MOVE = 0
+        self.STR = 5 + int(5 * multi)
+        self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "ATTACK":
+            Attack(self.STR, player)
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
 
 class Lich:
     TYPE = "Lich"
+    def __init__(self, summoned = False):
+        multi = gameData.floor / 2
+        if summoned:
+            self.EXP = 0
+        else:
+            self.EXP = 10 + int(20 * multi)
+        
+        self.MAX_HP = 50 + int(50 * multi)
+        self.HP = self.MAX_HP
+        self.HEAL = 1
+        
+        self.DEF = 0
+        self.BLOCK = 1
+        
+        self.MOVE = 0
+        self.STR = 5 + int(5 * multi)
+        self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
+    
+    def Move(self):
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
+        enemyMove = self.ABILITIES[self.MOVE]
+        if enemyMove == "ATTACK":
+            Attack(self.STR, player)
+        self.MOVE += 1
+        if self.MOVE > len(self.ABILITIES) - 1:
+            self.MOVE = 0
 
 # ======================================
 # SECTION: FUNCS
