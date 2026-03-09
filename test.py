@@ -28,7 +28,7 @@ class GameData:
 class Player:
     def __init__(self):
         self.MAX_HP = 20
-        self.HP = 20
+        self.HP = self.MAX_HP
         self.HEAL = 3
 
         self.DEF = 0
@@ -208,7 +208,7 @@ class Slime:
             self.EXP = 1 * multi
         
         self.MAX_HP = 10 * multi
-        self.HP = 10 * multi
+        self.HP = self.MAX_HP
         self.HEAL = 0
 
         self.DEF = 0
@@ -231,7 +231,7 @@ class Rat:
         else:
             self.EXP = 2 * multi
         self.MAX_HP = 5 * multi
-        self.HP = 5 * multi
+        self.HP = self.MAX_HP
         self.STR = 2 * multi
     HEAL = 0
     DEF = 0
@@ -249,7 +249,7 @@ class Boar:
         multi = gameData.floor
         self.EXP = 2 * multi
         self.MAX_HP = 10 * multi
-        self.HP = 10 * multi
+        self.HP = self.MAX_HP
         self.STR = int(1.5 * multi)
         self.BLOCK = 5 * multi
     HEAL = 0
@@ -272,7 +272,7 @@ class Goblin:
         multi = gameData.floor
         self.EXP = 3 * multi
         self.MAX_HP = 10 * multi
-        self.HP = 10 * multi
+        self.HP = self.MAX_HP
         self.STR = int(1.5 * multi)
         self.BLOCK = 5 * multi
     HEAL = 0
@@ -295,7 +295,7 @@ class Zombie:
         multi = gameData.floor
         self.EXP = 4 * multi
         self.MAX_HP = 10 * multi
-        self.HP = 10 * multi
+        self.HP = self.MAX_HP
         self.STR = int(1.5 * multi)
         self.BLOCK = 5 * multi
     HEAL = 0
@@ -320,8 +320,8 @@ class KingSlime:
     TYPE = "King Slime"
     def __init__(self):
         multi = gameData.floor
-        self.MAX_HP = 50 * multi
-        self.HP = 50 * multi
+        self.MAX_HP = 100 * multi
+        self.HP = self.MAX_HP
         self.BLOCK = 10 * multi
         self.EXP =  20 * multi
     STR = 0
@@ -349,7 +349,7 @@ class RatKing:
     def __init__(self):
         multi = gameData.floor
         self.MAX_HP = 50 * multi
-        self.HP = 50 * multi
+        self.HP = self.MAX_HP
         self.STR = 10 * multi
     BLOCK = 0
     EXP =  0
@@ -374,7 +374,7 @@ class RoyalBoar:
     def __init__(self):
         multi = gameData.floor
         self.MAX_HP = 50 * multi
-        self.HP = 50 * multi
+        self.HP = self.MAX_HP
         self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
@@ -402,7 +402,7 @@ class GoblinGeneral:
     def __init__(self):
         multi = gameData.floor
         self.MAX_HP = 50 * multi
-        self.HP = 50 * multi
+        self.HP = self.MAX_HP
         self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
@@ -430,7 +430,7 @@ class Lich:
     def __init__(self):
         multi = gameData.floor
         self.MAX_HP = 50 * multi
-        self.HP = 50 * multi
+        self.HP = self.MAX_HP
         self.BLOCK = 10 * multi
     STR = 0
     EXP =  0
