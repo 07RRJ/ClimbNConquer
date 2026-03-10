@@ -146,6 +146,7 @@ class Player:
                 for idx, (label, attrName, increse) in enumerate(lvlUpList, 1):
                     current = getattr(self, attrName)
                     print(f"({idx}) {label}: {current} + {increse}")
+                cls()
 
                 choice = Limit(f"Stat to increse (1 - {len(lvlUpList)}): ", 0, len(lvlUpList)) - 1
                 print("comfirm (y)")
@@ -159,33 +160,48 @@ class Player:
 # SECTION: ENEMIES
 # ======================================
 
-enemyTypes = ["Slime", "Rat", "Boar", "Goblin", "Zombie"]
-
 class Enemies:
     def __init__(self):
         self.current = []
         self.possible = ["Slime"]
-        self.amountEnemies = [2, 2, 1]
+        self.amountEnemies = [2, 2, 1, 1]
+        self.enemyTypes = ["Slime", "Rat", "Boar", "Goblin", "Zombie"]
 
     def generate(self):
-        if not self.current:
-            xEnemies = rng.choice(self.amountEnemies)
-            generatedEnemies = []
-            for i in range(xEnemies):
-                enemy = rng.choice(self.possible)
-                if enemy == "Slime":
-                    enemy = Slime()
-                elif enemy == "Rat":
-                    enemy = Rat()
-                elif enemy == "Boar":
-                    enemy = Boar()
-                elif enemy == "Goblin":
-                    enemy = Goblin()
-                elif enemy == "Zombie":
-                    enemy = Zombie()
-                generatedEnemies.append(enemy)
-            self.current = generatedEnemies
-    
+        xEnemies = rng.choice(self.amountEnemies)
+        generatedEnemies = []
+        for i in range(xEnemies):
+            enemy = rng.choice(self.possible)
+            if enemy == "Slime":
+                enemy = Slime()
+            elif enemy == "Rat":
+                enemy = Rat()
+            elif enemy == "Boar":
+                enemy = Boar()
+            elif enemy == "Goblin":
+                enemy = Goblin()
+            elif enemy == "Zombie":
+                enemy = Zombie()
+            generatedEnemies.append(enemy)
+        self.current = generatedEnemies
+
+    def generateBoss(self):
+        if gameData.floor % 5 == 1:
+            kingSlime = KingSlime()
+            self.current = [kingSlime]
+        elif gameData.floor % 5 == 2:
+            ratKing = RatKing()
+            self.current = [ratKing]
+        elif gameData.floor % 5 == 3:
+            royalBoar = RoyalBoar()
+            self.current = [royalBoar]
+        elif gameData.floor % 5 == 4:
+            goblinGeneral = GoblinGeneral()
+            self.current = [goblinGeneral]
+        elif gameData.floor % 5 == 0:
+            lich = Lich()
+            self.current = [lich]
+
     def killed(self):
         for i in range(len(self.current)):
             for idx, enemy in enumerate(self.current):
@@ -198,7 +214,7 @@ class Enemies:
         self.amountEnemies[0] = self.amountEnemies[1]
         self.amountEnemies[1] = self.amountEnemies[2]
         self.amountEnemies[2] += 1
-        self.possible.append(enemyTypes[(gameData.floor) % len(enemyTypes)])
+        self.possible.append(self.enemyTypes[(gameData.floor) % len(self.enemyTypes)])
 
 class Slime:
     TYPE = "Slime"
@@ -534,8 +550,8 @@ def Limit(question, Min, Max):
 
 def GetEnemyStats():
     stats = []
-    for idx, enemy in enumerate(enemies.current):
-        stats.append(f"({idx + 1}){enemy.TYPE}, HP: ({enemy.HP}/{enemy.MAX_HP}), DEF: ({enemy.DEF}/{enemy.BLOCK}), STR: {enemy.STR}")
+    for idx, enemy in enumerate(enemies.current, 1):
+        stats.append(f"({idx}){enemy.TYPE}, HP: ({enemy.HP}/{enemy.MAX_HP}), DEF: ({enemy.DEF}/{enemy.BLOCK}), STR: {enemy.STR}")
     print("Enemies:")
     for enemy in stats:
         print(enemy)
@@ -608,38 +624,21 @@ def playFloor():
 
 runing = True
 
+
 def play():
     endless = False
     while True:
         if endless or gameData.floor < 6:
-            if gameData.part > 10:
+            if gameData.part == 11:
                 gameData.part = 0
-                if gameData.floor % 5 == 1:
-                    kingSlime = KingSlime()
-                    enemies.current = [kingSlime]
-                elif gameData.floor % 5 == 2:
-                    ratKing = RatKing()
-                    enemies.current = [ratKing]
-                elif gameData.floor % 5 == 3:
-                    royalBoar = RoyalBoar()
-                    enemies.current = [royalBoar]
-                elif gameData.floor % 5 == 4:
-                    goblinGeneral = GoblinGeneral()
-                    enemies.current = [goblinGeneral]
-                elif gameData.floor % 5 == 0:
-                    lich = Lich()
-                    enemies.current = [lich]
-                result = playFloor()
+                enemies.generateBoss()
                 gameData.floor += 1
-                gameData.part += 1
-                if result == "won":
-                    gameData.part += 1
-                else:
-                    return "dead"
-                gameData.part = 1
-            if not enemies.current:
+            elif not enemies.current:
                 enemies.generate()
+            # for enemy in enemies.current:
+                # print(enemy)
             result = playFloor()
+            # time.sleep(10)
             gameData.part += 1
             if result == "dead":
                 return "dead"
@@ -648,7 +647,9 @@ def play():
         else:
             return "won"
 
-while True:
+runing = True
+
+while runing:
     cls()
     player = Player()
     enemies = Enemies()
@@ -663,5 +664,9 @@ while True:
             print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
         print("=" * 22)
     print("play again (y/n):")
-    while getwch().lower() != "y":
-        pass
+    while True: 
+        if getwch().lower() == "y":
+            break
+        elif getwch().lower() == "n":
+            runing = False
+            break
