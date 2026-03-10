@@ -16,7 +16,7 @@ def get_game_folder():
 runing = True
 
 player, enemies, gameData = Defult()
-Load(player, enemies, gameData)
+player, enemies, gameData = Load(player, enemies, gameData)
 
 # ======================================
 # SECTION: THE GAME LOOP STUFF
@@ -54,10 +54,10 @@ def playFloor():
 def play():
     if player.HP > 0:
         if gameData.floor > 5:
-            print("do you want to continue the game in endless?")
+            print("do you want to continue the game in endles (y/n)?")
             if Comfirm("y"):
                 gameData.endless = True
-            else:
+            elif Comfirm("n"):
                 return "won"
     else:
         return "dead"
@@ -70,20 +70,20 @@ def play():
             elif not enemies.current:
                 enemies.generate(gameData)
             result = playFloor()
-            # if gameData.part == 0:
-            Save(player, enemies, gameData)
-            gameData.part += 1
             if result == "dead":
                 return "dead"
+            elif gameData.part == 0:
+                Save(player, enemies, gameData)
             elif gameData.part == 5:
                 enemies.difficultyUp(gameData)
+            gameData.part += 1
         else:
             cls()
             print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
-            print("Do you want to continue this run in endless?")
+            print("Do you want to continue this run in endless (y/n)?")
             if Comfirm("y"):
                 gameData.endless = True
-            else:
+            elif Comfirm("n"):
                 return "won"
 
 # ======================================
@@ -96,12 +96,20 @@ while runing:
     if result == "won":
         print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
     else:
-        print(f"you died, floor: ({gameData.floor}-{gameData.part}), total turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}\nEnemies killed:")
-        print("=" * 22)
-        for enemy in gameData.enemiesKilled:
-            print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
-        print("=" * 22)
-    Load()
+        if gameData.floor > 5:
+            print(f"You won and died in endless on floor: ({gameData.floor}-{gameData.part})\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}\nEnemies killed:")
+            print("=" * 22)
+            for enemy in gameData.enemiesKilled:
+                print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
+            print("=" * 22)
+        else:
+            print(f"You died, floor: ({gameData.floor}-{gameData.part}), total turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}\nEnemies killed:")
+            print("=" * 22)
+            for enemy in gameData.enemiesKilled:
+                print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
+            print("=" * 22)
+    player, enemies, gameData = Defult()
+    Save(player, enemies, gameData)
     print("play again (y/n):")
     while True: 
         if Comfirm("y"):

@@ -1,14 +1,13 @@
 import random as rng
 from gameFuncs import Attack
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class Enemies:
-    def __init__(self):
-        self.current = []
-        self.possible = ["Slime"]
-        self.amountEnemies = [2, 2, 1, 1]
-        self.enemyTypes = ["Slime", "Rat", "Boar", "Goblin", "Zombie"]
+    current: list = field(default_factory=lambda: [])
+    possible: list = field(default_factory=lambda: ["Slime"])
+    amountEnemies: list = field(default_factory=lambda: [2, 2, 1, 1])
+    enemyTypes: list = field(default_factory=lambda: ["Slime", "Rat", "Boar", "Goblin", "Zombie"])
 
     def GetEnemyStats(self):
         print("Enemies:")

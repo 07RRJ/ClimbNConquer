@@ -1,32 +1,31 @@
 from gameFuncs import Attack, Limit, cls, Comfirm
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class Player:
-    def __init__(self):
-        self.MAX_HP = 20
-        self.HP = self.MAX_HP
-        self.HEAL = 3
+    MAX_HP: int = 20
+    HP: int = MAX_HP
+    HEAL: int = 3
 
-        self.DEF = 0
-        self.BLOCK = 3
+    DEF: int = 0
+    BLOCK: int = 3
 
-        self.STR = 1
-        self.AOE = 0
-        self.MULTI_ATTACK = 0
+    STR: int = 1
+    AOE: int = 0
+    MULTI_ATTACK: int = 0
 
-        self.BASE_STAMINA = 1
-        self.STAMINA = self.BASE_STAMINA
-        self.STAMINA_REGEN = 1
-        self.MAX_STAMINA = 5
+    BASE_STAMINA: float = 1
+    STAMINA: float = BASE_STAMINA
+    STAMINA_REGEN: float = 1
+    MAX_STAMINA: int = 5
 
-        self.MAX_MANA = 5
-        self.MANA = 0
+    MAX_MANA: int = 5
+    MANA: float = 0
 
-        self.EXP = 0
-        self.NEXT_LVL = 5
-        self.LVL = 0
-        self.ABILITIES = [["ATTACK", 1, True], ["AOE", 3, "King Slime"], ["MULTI SLAM", 5, "Rat King"], ["HEAL", 1, True], ["BLOCK", 1, True], ["REST", 0, True]]
+    EXP: int = 0
+    NEXT_LVL: int = 5
+    LVL: int = 0
+    ABILITIES: list [str] = field(default_factory=lambda: [["ATTACK", 1, True], ["AOE", 3, "King Slime"], ["MULTI SLAM", 5, "Rat King"], ["HEAL", 1, True], ["BLOCK", 1, True], ["REST", 0, True]])
 
     def listStats(self):
         stats = [

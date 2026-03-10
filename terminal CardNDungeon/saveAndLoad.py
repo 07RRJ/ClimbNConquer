@@ -5,8 +5,6 @@ from gameData import GameData
 import json
 import sys, os
 
-from time import sleep
-
 def get_game_folder():
     return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,5 +25,17 @@ def Save(player, enemies, gameData):
     with open(SAVE_FILE, "w", encoding="utf-8") as f:
         json.dump(saveData, f, indent=4)
 
+from time import sleep
+
 def Load(player, enemies, gameData):
-    pass
+    try:
+        with open(SAVE_FILE, 'r') as f:
+            save_object = json.load(f)
+
+        player = Player(**save_object["player"])
+        enemies = Enemies(**save_object["enemies"])
+        gameData = GameData(**save_object["gameData"])
+        return player, enemies, gameData
+    except:
+        Save(player, enemies, gameData)
+        return player, enemies, gameData
