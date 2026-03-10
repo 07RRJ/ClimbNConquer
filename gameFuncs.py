@@ -1,3 +1,14 @@
+import sys, os
+
+def GetGameFolder():
+    return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+
+def ResourcePath(relative_path, path = False):
+    if not path:
+        return os.path.join(GetGameFolder(), relative_path)
+    else:
+        return os.path.join(path, relative_path)
+
 def Attack(STR, enemy):
     if STR:
         if STR >= enemy.DEF + enemy.HP:

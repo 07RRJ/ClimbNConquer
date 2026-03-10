@@ -6,6 +6,7 @@ from dataclasses import dataclass, asdict
 from saveAndLoad import Defult, Save, Load
 import pygame
 from colours import Colours as CO
+from uiElements import Button
 
 # ======================================
 # SECTION: BASE
@@ -108,7 +109,14 @@ def play():
 # SECTION: PRE/POST GAME
 # ======================================
 
+buttons = []
+for i in range(10):
+    buttons.append(Button(f"{i}", pygame.Rect(150 * i, 150, 200, 60), CO.BLUE[2]))
+
+selected_index = 0
 while runing:
+    clock.tick(30)
+    win.fill(CO.BLACK[3])
     result = play()
     if result == "won":
         pass
@@ -137,5 +145,21 @@ while runing:
     #     elif Comfirm("n"):
     #         runing = False
     #         break
-    win.fill(CO.BLACK[3])
+
+    for i, btn in enumerate(buttons):
+        is_selected = (i == selected_index)
+        btn.draw(win, is_selected=is_selected)
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            for i, btn in enumerate(buttons):
+                if btn.is_clicked(pos):
+                    selected_index = i
+                    break
+
     pygame.display.flip()
