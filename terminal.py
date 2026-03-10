@@ -2,10 +2,9 @@ import os, sys
 import random as rng
 from msvcrt import getwch
 import time
-from player import Player
-from enemies import Enemies
-from gameData import GameData
 from gameFuncs import cls, GetTime, Comfirm
+from dataclasses import dataclass, asdict
+from saveAndLoad import Defult, Save, Load
 
 # ======================================
 # SECTION: BASE
@@ -13,6 +12,11 @@ from gameFuncs import cls, GetTime, Comfirm
 
 def get_game_folder():
     return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+
+runing = True
+
+player, enemies, gameData = Defult()
+Load(player, enemies, gameData)
 
 # ======================================
 # SECTION: THE GAME LOOP STUFF
@@ -43,7 +47,9 @@ def playFloor():
         elif player.HP <= 0:
             return "dead"
 
-runing = True
+# ======================================
+# SECTION: LVL LOGIC
+# ======================================
 
 def play():
     if player.HP > 0:
@@ -64,6 +70,8 @@ def play():
             elif not enemies.current:
                 enemies.generate(gameData)
             result = playFloor()
+            # if gameData.part == 0:
+            Save(player, enemies, gameData)
             gameData.part += 1
             if result == "dead":
                 return "dead"
@@ -78,13 +86,12 @@ def play():
             else:
                 return "won"
 
-runing = True
+# ======================================
+# SECTION: PRE/POST GAME
+# ======================================
 
 while runing:
     cls()
-    player = Player()
-    enemies = Enemies()
-    gameData = GameData()
     result = play()
     if result == "won":
         print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
@@ -94,10 +101,11 @@ while runing:
         for enemy in gameData.enemiesKilled:
             print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
         print("=" * 22)
+    Load()
     print("play again (y/n):")
     while True: 
-        if getwch().lower() == "y":
+        if Comfirm("y"):
             break
-        elif getwch().lower() == "n":
+        elif Comfirm("n"):
             runing = False
             break

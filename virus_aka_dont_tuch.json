@@ -1,0 +1,24 @@
+{
+    "player": {},
+    "enemies": {},
+    "gameData": {
+        "startTime": 1773165968.0854185,
+        "floor": 1,
+        "part": 2,
+        "totalTurns": 110,
+        "turn": 10,
+        "endless": false,
+        "enemiesKilled": {
+            "Slime": 4,
+            "Rat": 0,
+            "Boar": 0,
+            "Goblin": 0,
+            "Zombie": 0,
+            "King Slime": 0,
+            "Rat King": 0,
+            "Royal Boar": 0,
+            "Goblin General": 0,
+            "Lich": 0
+        }
+    }
+}

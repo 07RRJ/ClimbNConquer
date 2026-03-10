@@ -1,4 +1,7 @@
 from gameFuncs import Attack, Limit, cls, Comfirm
+from dataclasses import dataclass
+
+@dataclass
 class Player:
     def __init__(self):
         self.MAX_HP = 20

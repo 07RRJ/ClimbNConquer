@@ -1,6 +1,8 @@
 import random as rng
 from gameFuncs import Attack
+from dataclasses import dataclass
 
+@dataclass
 class Enemies:
     def __init__(self):
         self.current = []
