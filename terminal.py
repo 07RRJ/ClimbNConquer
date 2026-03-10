@@ -4,6 +4,7 @@ from msvcrt import getwch
 import time
 from player import Player
 from enemies import Enemies
+from gameData import GameData
 from gameFuncs import cls, Attack, Limit, Comfirm, GetTime
 
 # ======================================
@@ -12,18 +13,6 @@ from gameFuncs import cls, Attack, Limit, Comfirm, GetTime
 
 def get_game_folder():
     return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
-
-class GameData:
-    def __init__(self):
-        self.startTime = time.time()
-        self.floor = 1
-        self.part = 1
-        self.totalTurns = 0
-        self.turn = 0
-        self.enemiesKilled = {
-            "Slime": 0, "Rat": 0, "Boar": 0, "Goblin": 0, "Zombie": 0,
-            "King Slime": 0, "Rat King": 0, "Royal Boar": 0, "Goblin General": 0, "Lich": 0
-        }
 
 # ======================================
 # SECTION: THE GAME LOOP STUFF
