@@ -21,7 +21,7 @@ def resource_path(relative_path):
 
 game_folder = get_game_folder()
 
-BASE_WIDTH, BASE_HEIGHT = 320, 320
+BASE_WIDTH, BASE_HEIGHT = 1920, 1080, 
 win = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
 
 clock = pygame.time.Clock()
