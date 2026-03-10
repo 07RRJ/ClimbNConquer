@@ -1,10 +1,6 @@
 import random as rng
 from gameFuncs import Attack
 
-# ======================================
-# SECTION: ENEMIES
-# ======================================
-
 class Enemies:
     def __init__(self):
         self.current = []
@@ -65,6 +61,10 @@ class Enemies:
         self.amountEnemies[1] = self.amountEnemies[2]
         self.amountEnemies[2] += 1
         self.possible.append(self.enemyTypes[(gameData.floor) % len(self.enemyTypes)])
+
+# ======================================
+# SECTION: ENEMIES
+# ======================================
 
 class Slime:
     TYPE = "Slime"

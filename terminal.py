@@ -5,7 +5,7 @@ import time
 from player import Player
 from enemies import Enemies
 from gameData import GameData
-from gameFuncs import cls, Attack, Limit, Comfirm, GetTime
+from gameFuncs import cls, GetTime, Comfirm
 
 # ======================================
 # SECTION: BASE
@@ -46,9 +46,17 @@ def playFloor():
 runing = True
 
 def play():
-    endless = False
+    if player.HP > 0:
+        if gameData.floor > 5:
+            print("do you want to continue the game in endless?")
+            if Comfirm("y"):
+                gameData.endless = True
+            else:
+                return "won"
+    else:
+        return "dead"
     while True:
-        if endless or gameData.floor < 6:
+        if gameData.endless or gameData.floor < 6:
             if gameData.part == 11:
                 gameData.part = 0
                 enemies.generateBoss(gameData)
@@ -62,7 +70,13 @@ def play():
             elif gameData.part == 5:
                 enemies.difficultyUp(gameData)
         else:
-            return "won"
+            cls()
+            print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
+            print("Do you want to continue this run in endless?")
+            if Comfirm("y"):
+                gameData.endless = True
+            else:
+                return "won"
 
 runing = True
 
