@@ -15,7 +15,9 @@ class Data:
 
     title_font_path = ResourcePath("assets/fonts/COPRGTB.TTF")
     text_font_path = ResourcePath("assets/fonts/corbelb.ttf")
+    text_font_path1 = ResourcePath("assets/fonts/corbelb.ttf")
 
 
     title_font = pygame.font.Font(title_font_path, 64)
     text_font = pygame.font.Font(text_font_path, 24)
+    text_font1 = pygame.font.Font(text_font_path1, 28)

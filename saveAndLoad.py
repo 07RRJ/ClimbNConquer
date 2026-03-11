@@ -48,18 +48,25 @@ def DisplaySave(file):
             save_object = json.load(f)
 
         playerData = save_object["player"]
+        # enemyData = save_object["enemies"]
         gameData = save_object["gameData"]
 
         data = [
-            f"FLOOR: ({gameData["floor"]}-{gameData["part"]})",
-            f"LVL: {playerData["LVL"]}",
-            f"EXP: {playerData["EXP"]}/{playerData["NEXT_LVL"]}",
-            f"HP: {playerData["HP"]}/{playerData["MAX_HP"]}",
-            f"HEAL: {playerData["HEAL"]}",
-            f"STR: {playerData["STR"]}",
-            f"DEF: {playerData["BLOCK"]}",
-            f"STAMINA: {playerData["STAMINA"]}/{playerData["MAX_STAMINA"]}"
+            ("Player Info:", False),
+            ("Floor", f"({gameData['floor']}-{gameData['part']})"),
+            ("Total turns", f"({gameData['totalTurns']})"),
+            ("Lvl", f"{playerData['LVL']}"),
+            ("Exp", f"{playerData['EXP']}/{playerData['NEXT_LVL']}"),
+            ("Hp", f"{playerData['HP']}/{playerData['MAX_HP']}"),
+            ("Heal", f"{playerData['HEAL']}"),
+            ("Str", f"{playerData['STR']}"),
+            ("Def", f"{playerData['BLOCK']}"),
+            ("Stamina", f"{playerData['STAMINA']}/{playerData['MAX_STAMINA']}"),
+            ("Slaughter Tome:", False)
         ]
+
+        for enemy in gameData["enemiesKilled"]:
+            data.append((f"{enemy}", f"{gameData['enemiesKilled'][enemy]}"))
 
         return data
     except Exception as e:

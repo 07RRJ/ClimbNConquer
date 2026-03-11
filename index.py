@@ -45,10 +45,8 @@ def playFloor(player, enemies, gameData):
             gameData.turn += 1
             if gameData.part != 0:
                 pass
-                # print(f"Floor {gameData.floor}-{gameData.part}, Turn: ({gameData.turn})")
             else:
                 pass
-                # print(f"Boss battle, Turn: ({gameData.turn})")
             enemies.GetEnemyStats()
             player.Move(gameData, enemies)
 
@@ -72,11 +70,6 @@ def play(file):
     if player.HP > 0:
         if gameData.floor > 5:
             pass
-            # print("do you want to continue the game in endles (y/n)?")
-            # if Comfirm("y"):
-            #     gameData.endless = True
-            # elif Comfirm("n"):
-            #     return "won"
     else:
         return "dead"
     while True:
@@ -97,12 +90,6 @@ def play(file):
             gameData.part += 1
         else:
             pass
-            # print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
-            # print("Do you want to continue this run in endless (y/n)?")
-            # if Comfirm("y"):
-            #     gameData.endless = True
-            # elif Comfirm("n"):
-            #     return "won"
 
 # ======================================
 # SECTION: PRE/POST GAME
@@ -112,10 +99,13 @@ def play(file):
 def GameMenu():
     runing = True
     selected_index = None
+
+    title = Data.title_font.render("SELECT SAVE", True, (255, 255, 255))
+
     buttons = [
-        Button(f"Save 1", pygame.Rect(BASE_WIDTH//5-100, 150, 200, 60), CO.BLUE[2]),
-        Button(f"Save 2", pygame.Rect(BASE_WIDTH//2-100, 150, 200, 60), CO.BLUE[2]),
-        Button(f"Save 3", pygame.Rect(BASE_WIDTH//5*4-100, 150, 200, 60), CO.BLUE[2]),
+        Button(f"Load Save 1", pygame.Rect(BASE_WIDTH//5-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"Load Save 2", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"Load Save 3", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
         create_back_button()
     ]
 
@@ -125,62 +115,82 @@ def GameMenu():
     saveData1 = DisplaySave(1)
     saveData2 = DisplaySave(2)
 
+    existingSaveImg = pygame.image.load(ResourcePath("assets/img/save.png")).convert_alpha()
+    existingSaveImg = pygame.transform.scale(existingSaveImg, (400, 700))
+
+    noneExistingSaveImg = pygame.image.load(ResourcePath("assets/img/noSave.png")).convert_alpha()
+    noneExistingSaveImg = pygame.transform.scale(noneExistingSaveImg, (400, 200))
+
+    saveImgs = []
+
     if saveData:
-        for idx, data in enumerate(saveData):
-            print(data)
-            saveInfo.append((Data.text_font.render(data, True, (255, 255, 255)), (BASE_WIDTH//5-100, 220+24*idx)))
+        idx = 0
+        saveImgs.append((existingSaveImg, (BASE_WIDTH//5-180, 180)))
+        for data in saveData:
+            if data[1]:
+                key = Data.text_font.render(data[0], True, (0, 0, 0))
+                value = Data.text_font.render(data[1], True, (0, 0, 0))
+                saveInfo.append((key, (BASE_WIDTH//5-100, 200+24*idx)))
+                saveInfo.append((value, (BASE_WIDTH//5+100-value.get_width(), 200+24*idx)))
+            else:
+                idx += 1
+                key = Data.text_font1.render(data[0], True, (0, 0, 0))
+                saveInfo.append((key, (BASE_WIDTH//5-100, 200+24*idx)))
+                idx += 0.4
+            idx += 1
+    else:
+        saveImgs.append((noneExistingSaveImg, (BASE_WIDTH//5-180, 180)))
+
     
     if saveData1:
-        for idx, data in enumerate(saveData1):
-            saveInfo.append((Data.text_font.render(data, True, (255, 255, 255)), (BASE_WIDTH//2-100, 220+24*idx)))
+        idx = 0
+        saveImgs.append((existingSaveImg, (BASE_WIDTH//2-180, 180)))
+        for data in saveData1:
+            if data[1]:
+                key = Data.text_font.render(data[0], True, (0, 0, 0))
+                value = Data.text_font.render(data[1], True, (0, 0, 0))
+                saveInfo.append((key, (BASE_WIDTH//2-100, 200+24*idx)))
+                saveInfo.append((value, (BASE_WIDTH//2+100-value.get_width(), 200+24*idx)))
+            else:
+                idx += 1
+                key = Data.text_font1.render(data[0], True, (0, 0, 0))
+                saveInfo.append((key, (BASE_WIDTH//2-100, 200+24*idx)))
+                idx += 0.4
+            idx += 1
+    else:
+        saveImgs.append((noneExistingSaveImg, (BASE_WIDTH//2-180, 180)))
     
     if saveData2:
-        for idx, data in enumerate(saveData2):
-            saveInfo.append((Data.text_font.render(data, True, (255, 255, 255)), (BASE_WIDTH//5*4-100, 220+24*idx)))
-
-    # saveInfo = (
-    #     (Data.text_font.render(saveData, True, (255, 255, 255)), (BASE_WIDTH//5-100, 150)),
-    #     (Data.text_font.render(saveData1, True, (255, 255, 255)), (BASE_WIDTH//2-100, 150)),
-    #     (Data.text_font.render(saveData2, True, (255, 255, 255)), (BASE_WIDTH//5*4-100, 150))
-    # )
+        idx = 0
+        saveImgs.append((existingSaveImg, (BASE_WIDTH//5*4-180, 180)))
+        for data in saveData2:
+            if data[1]:
+                key = Data.text_font.render(data[0], True, (0, 0, 0))
+                value = Data.text_font.render(data[1], True, (0, 0, 0))
+                saveInfo.append((key, (BASE_WIDTH//5*4-100, 200+24*idx)))
+                saveInfo.append((value, (BASE_WIDTH//5*4+100-value.get_width(), 200+24*idx)))
+            else:
+                idx += 1
+                key = Data.text_font1.render(data[0], True, (0, 0, 0))
+                saveInfo.append((key, (BASE_WIDTH//5*4-100, 200+24*idx)))
+                idx += 0.4
+            idx += 1
+    else:
+        saveImgs.append((noneExistingSaveImg, (BASE_WIDTH//5*4-180, 180)))
 
     while runing:
         clock.tick(30)
         screen.fill(CO.BLACK[3])
-
-        # result = play()
-        # if result == "won":
-        #     pass
-        #     print(f"You won!\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}")
-        # else:
-        #     if gameData.floor > 5:
-        #         pass
-        #         print(f"You won and died in endless on floor: ({gameData.floor}-{gameData.part})\ntotal turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}\nEnemies killed:")
-        #         print("=" * 22)
-        #         for enemy in gameData.enemiesKilled:
-        #             print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
-        #         print("=" * 22)
-            # else:
-            #     pass
-        #         print(f"You died, floor: ({gameData.floor}-{gameData.part}), total turns: {gameData.totalTurns}\nTime passed: {GetTime(gameData.startTime, time.time())}\nEnemies killed:")
-        #         print("=" * 22)
-        #         for enemy in gameData.enemiesKilled:
-        #             print(f"- {enemy:<15}: {gameData.enemiesKilled[enemy]}")
-        #         print("=" * 22)
-        # player, enemies, gameData = Defult()
-        # Save(player, enemies, gameData)
-        # print("play again (y/n):")
-        # while True: 
-        #     if Comfirm("y"):
-        #         break
-        #     elif Comfirm("n"):
-        #         runing = False
-        #         break
+        screen.blit(title, (BASE_WIDTH//2 - title.get_width()//2, 50))
 
         for i, btn in enumerate(buttons):
             is_selected = (i == selected_index)
             btn.draw(screen, is_selected=is_selected)
         
+        for data in saveImgs:
+            img, xy = data
+            screen.blit(img, xy)
+
         for idx, info in enumerate(saveInfo):
             item, xy = info
             screen.blit(item, xy)
@@ -239,9 +249,6 @@ def Start():
 
     while runing:
         clock.tick(30)
-        # screen.fill(CO.BLACK[3])
-        # screen.fill(CO.BLUE[4])
-
         screen.blit(bg, (0, 0))
         screen.blit(title, (BASE_WIDTH//2 - title.get_width()//2, 50))
 
