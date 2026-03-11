@@ -48,11 +48,20 @@ def DisplaySave(file):
             save_object = json.load(f)
 
         playerData = save_object["player"]
-        enemyData = save_object["enemies"]
         gameData = save_object["gameData"]
 
-        playerString = f"HP: {playerData["HP"]}/{playerData["MAX_HP"]}\nHEAL: {playerData["HEAL"]}\nSTR: {playerData["STR"]}\n"
+        data = [
+            f"FLOOR: ({gameData["floor"]}-{gameData["part"]})",
+            f"LVL: {playerData["LVL"]}",
+            f"EXP: {playerData["EXP"]}/{playerData["NEXT_LVL"]}",
+            f"HP: {playerData["HP"]}/{playerData["MAX_HP"]}",
+            f"HEAL: {playerData["HEAL"]}",
+            f"STR: {playerData["STR"]}",
+            f"DEF: {playerData["BLOCK"]}",
+            f"STAMINA: {playerData["STAMINA"]}/{playerData["MAX_STAMINA"]}"
+        ]
 
-        return playerString
-    except:
+        return data
+    except Exception as e:
+        print(e)
         return None

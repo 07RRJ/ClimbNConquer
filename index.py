@@ -118,15 +118,31 @@ def GameMenu():
         Button(f"Save 3", pygame.Rect(BASE_WIDTH//5*4-100, 150, 200, 60), CO.BLUE[2]),
         create_back_button()
     ]
+
+    saveInfo = []
+
     saveData = DisplaySave(0)
     saveData1 = DisplaySave(1)
     saveData2 = DisplaySave(2)
 
-    saveInfo = (
-        (Data.title_font.render(saveData, True, (255, 255, 255)), (BASE_WIDTH//5-100, 150)),
-        (Data.title_font.render(saveData1, True, (255, 255, 255)), (BASE_WIDTH//2-100, 150)),
-        (Data.title_font.render(saveData2, True, (255, 255, 255)), (BASE_WIDTH//5*4-100, 150))
-    )
+    if saveData:
+        for idx, data in enumerate(saveData):
+            print(data)
+            saveInfo.append((Data.text_font.render(data, True, (255, 255, 255)), (BASE_WIDTH//5-100, 220+24*idx)))
+    
+    if saveData1:
+        for idx, data in enumerate(saveData1):
+            saveInfo.append((Data.text_font.render(data, True, (255, 255, 255)), (BASE_WIDTH//2-100, 220+24*idx)))
+    
+    if saveData2:
+        for idx, data in enumerate(saveData2):
+            saveInfo.append((Data.text_font.render(data, True, (255, 255, 255)), (BASE_WIDTH//5*4-100, 220+24*idx)))
+
+    # saveInfo = (
+    #     (Data.text_font.render(saveData, True, (255, 255, 255)), (BASE_WIDTH//5-100, 150)),
+    #     (Data.text_font.render(saveData1, True, (255, 255, 255)), (BASE_WIDTH//2-100, 150)),
+    #     (Data.text_font.render(saveData2, True, (255, 255, 255)), (BASE_WIDTH//5*4-100, 150))
+    # )
 
     while runing:
         clock.tick(30)
