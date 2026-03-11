@@ -1,17 +1,12 @@
 import pygame, os
 from dataclasses import dataclass
 from gameFuncs import GetGameFolder, ResourcePath
-
-ASSETS = ResourcePath("assets")
-FONTS = ResourcePath("fonts", ASSETS)
-
-title_font_path = ResourcePath("assets/fonts/COPRGTB.TTF")
-text_font_path = ResourcePath("assets/fonts/corbelb.ttf")
+from uiData import Data
+from uiData import Colours as CO
 
 pygame.init()
 
-title_font = pygame.font.Font(title_font_path, 64)
-text_font = pygame.font.Font(text_font_path, 24)
+BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
 # title_font = pygame.font.SysFont("Copperplate Gothic", 64, bold=True)
 # text_font = pygame.font.SysFont("Arial", 24, bold=True)
@@ -27,7 +22,7 @@ class Button:
     text: str
     rect: pygame.Rect
     color: tuple
-    font: pygame.font.Font = text_font
+    font: pygame.font.Font = Data.text_font
     label: pygame.Surface = None
     label_rect: pygame.Rect = None
 
@@ -46,3 +41,12 @@ class Button:
 
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
+
+def create_back_button(back = True):
+    button_width, button_height = 120, 60
+    button_x = BASE_WIDTH - button_width - 20
+    button_y = BASE_HEIGHT - button_height - 20
+    if back:
+        return Button("Back", pygame.Rect(button_x, button_y, button_width, button_height), CO.RED[2])
+    else:
+        return Button("Quit", pygame.Rect(button_x, button_y, button_width, button_height), CO.RED[2])

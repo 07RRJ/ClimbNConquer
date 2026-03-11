@@ -3,10 +3,11 @@ import random as rng
 import time
 from gameFuncs import GetTime
 from dataclasses import dataclass, asdict
-from saveAndLoad import Defult, Save, Load
+from saveAndLoad import Defult, Save, Load, DisplaySave
 import pygame
-from colours import Colours as CO
-from uiElements import Button
+from uiData import Colours as CO
+from uiElements import Button, create_back_button
+from gameFuncs import GetGameFolder, ResourcePath
 from uiData import Data
 
 # ======================================
@@ -14,14 +15,6 @@ from uiData import Data
 # ======================================
 
 pygame.init()
-
-def get_game_folder():
-    return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
-
-def resource_path(relative_path):
-    return os.path.join(get_game_folder(), relative_path)
-
-game_folder = get_game_folder()
 
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
@@ -33,14 +26,17 @@ def get_game_folder():
 
 runing = True
 
-player, enemies, gameData = Defult()
-player, enemies, gameData = Load(player, enemies, gameData)
+# ======================================
+# SECTION: FUNCS
+# ======================================
+
+# def MenuLoop():
 
 # ======================================
 # SECTION: THE GAME LOOP STUFF
 # ======================================
 
-def playFloor():
+def playFloor(player, enemies, gameData):
     player.DEF = 0
     gameData.turn = 0
     player.STAMINA = player.BASE_STAMINA
@@ -70,7 +66,9 @@ def playFloor():
 # SECTION: LVL LOGIC
 # ======================================
 
-def play():
+def play(file):
+    player, enemies, gameData = Defult()
+    player, enemies, gameData = Load(player, enemies, gameData, file)
     if player.HP > 0:
         if gameData.floor > 5:
             pass
@@ -89,11 +87,11 @@ def play():
                 gameData.floor += 1
             elif not enemies.current:
                 enemies.generate(gameData)
-            result = playFloor()
+            result = playFloor(player, enemies, gameData)
             if result == "dead":
                 return "dead"
             elif gameData.part == 0:
-                Save(player, enemies, gameData)
+                Save(player, enemies, gameData, file)
             elif gameData.part == 5:
                 enemies.difficultyUp(gameData)
             gameData.part += 1
@@ -115,9 +113,21 @@ def GameMenu():
     runing = True
     selected_index = None
     buttons = [
-        Button(f"{i}", pygame.Rect(150 * i, 150, 200, 60), CO.BLUE[2]) for i in range(10)
+        Button(f"Save 1", pygame.Rect(BASE_WIDTH//5-100, 150, 200, 60), CO.BLUE[2]),
+        Button(f"Save 2", pygame.Rect(BASE_WIDTH//2-100, 150, 200, 60), CO.BLUE[2]),
+        Button(f"Save 3", pygame.Rect(BASE_WIDTH//5*4-100, 150, 200, 60), CO.BLUE[2]),
+        create_back_button()
     ]
-    print("init")
+    saveData = DisplaySave(0)
+    saveData1 = DisplaySave(1)
+    saveData2 = DisplaySave(2)
+
+    saveInfo = (
+        (Data.title_font.render(saveData, True, (255, 255, 255)), (BASE_WIDTH//5-100, 150)),
+        (Data.title_font.render(saveData1, True, (255, 255, 255)), (BASE_WIDTH//2-100, 150)),
+        (Data.title_font.render(saveData2, True, (255, 255, 255)), (BASE_WIDTH//5*4-100, 150))
+    )
+
     while runing:
         clock.tick(30)
         screen.fill(CO.BLACK[3])
@@ -155,25 +165,57 @@ def GameMenu():
             is_selected = (i == selected_index)
             btn.draw(screen, is_selected=is_selected)
         
+        for idx, info in enumerate(saveInfo):
+            item, xy = info
+            screen.blit(item, xy)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                is_hovering = False
+                for i, btn in enumerate(buttons):
+                    if btn.rect.collidepoint(pos):
+                        selected_index = i
+                        is_hovering = True
+                    elif is_hovering == False:
+                        selected_index = None
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
                         selected_index = i
                         break
+            
+                if selected_index == 0:
+                    play(0)
+
+                elif selected_index == 1:
+                    play(1)
+
+                elif selected_index == 2:
+                    play(2)
+
+                elif selected_index == len(buttons) - 1:
+                    return
+
 
         pygame.display.flip()
 
 def Start():
     selected_index = None
+    last_selected_index = 0
+    bg = pygame.image.load(ResourcePath("assets/img/mainMenu.png")).convert_alpha()
+    bg = pygame.transform.scale(bg, (BASE_WIDTH, BASE_HEIGHT))
+
     buttons = [
-        Button(f"Start Game", pygame.Rect(BASE_WIDTH // 2 - 100, BASE_HEIGHT // 2 - 60, 200, 60), CO.BLUE[2]),
-        Button(f"no clue", pygame.Rect(BASE_WIDTH // 2 - 100, BASE_HEIGHT // 2 + 60, 200, 60), CO.BLUE[2])
+        Button(f"Start Game", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT//2-60, 200, 60), CO.BLUE[2]),
+        Button(f"no clue", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT//2+60, 200, 60), CO.BLUE[2]),
+        create_back_button(back=False)
         # Button(f"Start Game", pygame.Rect(BASE_WIDTH // 2 + 100, BASE_HEIGHT // 2, 200, 60), CO.BLUE[2])
     ]
 
@@ -181,8 +223,10 @@ def Start():
 
     while runing:
         clock.tick(30)
-        screen.fill(CO.BLACK[3])
+        # screen.fill(CO.BLACK[3])
+        # screen.fill(CO.BLUE[4])
 
+        screen.blit(bg, (0, 0))
         screen.blit(title, (BASE_WIDTH//2 - title.get_width()//2, 50))
 
         for i, btn in enumerate(buttons):
@@ -194,7 +238,18 @@ def Start():
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                is_hovering = False
+                for i, btn in enumerate(buttons):
+                    if btn.rect.collidepoint(pos):
+                        selected_index = i
+                        last_selected_index = i
+                        is_hovering = True
+                    elif is_hovering == False:
+                        selected_index = None
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
@@ -202,22 +257,15 @@ def Start():
                         break
 
                 if selected_index == 0:
-                    print("start")
                     GameMenu()
 
                 elif selected_index == 1:
-                    print("btn 1")
+                    pass
                     # GameMenu()
 
-            if event.type == pygame.MOUSEMOTION:
-                pos = pygame.mouse.get_pos()
-                is_hovering = False
-                for i, btn in enumerate(buttons):
-                    if btn.rect.collidepoint(pos):
-                        selected_index = i
-                        is_hovering = True
-                    elif is_hovering == False:
-                        selected_index = None
+                elif selected_index == len(buttons) - 1:
+                    pygame.quit()
+                    sys.exit()
 
         pygame.display.flip()
 
