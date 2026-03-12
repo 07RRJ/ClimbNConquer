@@ -3,10 +3,10 @@ import random as rng
 import time
 from gameFuncs import GetTime
 from dataclasses import dataclass, asdict
-from saveAndLoad import Defult, Save, Load, DisplaySave
+from saveAndLoad import Defult, Save, Load
 import pygame
 from uiData import Colours as CO
-from uiElements import Button, create_back_button
+from uiElements import Button, create_back_button, GetSaves
 from gameFuncs import GetGameFolder, ResourcePath
 from uiData import Data
 
@@ -142,74 +142,7 @@ def GameMenu():
         create_back_button()
     ]
 
-    saveInfo = []
-
-    saveData = DisplaySave(0)
-    saveData1 = DisplaySave(1)
-    saveData2 = DisplaySave(2)
-
-    existingSaveImg = pygame.image.load(ResourcePath("assets/img/save.png")).convert_alpha()
-    existingSaveImg = pygame.transform.scale(existingSaveImg, (400, 700))
-
-    noneExistingSaveImg = pygame.image.load(ResourcePath("assets/img/noSave.png")).convert_alpha()
-    noneExistingSaveImg = pygame.transform.scale(noneExistingSaveImg, (400, 200))
-
-    saveImgs = []
-
-    if saveData:
-        idx = 0
-        saveImgs.append((existingSaveImg, (BASE_WIDTH//5-180, 180)))
-        for data in saveData:
-            if data[1]:
-                key = Data.text_font.render(data[0], True, (0, 0, 0))
-                value = Data.text_font.render(data[1], True, (0, 0, 0))
-                saveInfo.append((key, (BASE_WIDTH//5-100, 200+24*idx)))
-                saveInfo.append((value, (BASE_WIDTH//5+100-value.get_width(), 200+24*idx)))
-            else:
-                idx += 1
-                key = Data.text_font1.render(data[0], True, (0, 0, 0))
-                saveInfo.append((key, (BASE_WIDTH//5-100, 200+24*idx)))
-                idx += 0.4
-            idx += 1
-    else:
-        saveImgs.append((noneExistingSaveImg, (BASE_WIDTH//5-180, 180)))
-
-    
-    if saveData1:
-        idx = 0
-        saveImgs.append((existingSaveImg, (BASE_WIDTH//2-180, 180)))
-        for data in saveData1:
-            if data[1]:
-                key = Data.text_font.render(data[0], True, (0, 0, 0))
-                value = Data.text_font.render(data[1], True, (0, 0, 0))
-                saveInfo.append((key, (BASE_WIDTH//2-100, 200+24*idx)))
-                saveInfo.append((value, (BASE_WIDTH//2+100-value.get_width(), 200+24*idx)))
-            else:
-                idx += 1
-                key = Data.text_font1.render(data[0], True, (0, 0, 0))
-                saveInfo.append((key, (BASE_WIDTH//2-100, 200+24*idx)))
-                idx += 0.4
-            idx += 1
-    else:
-        saveImgs.append((noneExistingSaveImg, (BASE_WIDTH//2-180, 180)))
-    
-    if saveData2:
-        idx = 0
-        saveImgs.append((existingSaveImg, (BASE_WIDTH//5*4-180, 180)))
-        for data in saveData2:
-            if data[1]:
-                key = Data.text_font.render(data[0], True, (0, 0, 0))
-                value = Data.text_font.render(data[1], True, (0, 0, 0))
-                saveInfo.append((key, (BASE_WIDTH//5*4-100, 200+24*idx)))
-                saveInfo.append((value, (BASE_WIDTH//5*4+100-value.get_width(), 200+24*idx)))
-            else:
-                idx += 1
-                key = Data.text_font1.render(data[0], True, (0, 0, 0))
-                saveInfo.append((key, (BASE_WIDTH//5*4-100, 200+24*idx)))
-                idx += 0.4
-            idx += 1
-    else:
-        saveImgs.append((noneExistingSaveImg, (BASE_WIDTH//5*4-180, 180)))
+    saveImgs, saveInfo = GetSaves()
 
     while runing:
         clock.tick(30)
@@ -279,7 +212,7 @@ def Start():
         create_back_button(back=False)
     ]
 
-    title = Data.title_font.render("Card N Dungeon", True, (255, 255, 255))
+    title = Data.title_font.render("Climb N Conquer", True, (255, 255, 255))
 
     while runing:
         clock.tick(30)

@@ -45,13 +45,12 @@ def Load(player, enemies, gameData, file):
         Save(player, enemies, gameData, file)
         return player, enemies, gameData
 
-def DisplaySave(file):
+def GetSaveData(file):
     try:
         with open(save_files[file], 'r') as f:
             save_object = json.load(f)
 
         playerData = save_object["player"]
-        # enemyData = save_object["enemies"]
         gameData = save_object["gameData"]
 
         data = [
