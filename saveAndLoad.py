@@ -21,11 +21,14 @@ def Defult():
     return player, enemies, gameData
 
 def Save(player, enemies, gameData, file):
-    saveData = {
-        "player": asdict(player),
-        "enemies": asdict(enemies),
-        "gameData": asdict(gameData)
-    }
+    if player.HP > 0:
+        saveData = {
+            "player": asdict(player),
+            "enemies": asdict(enemies),
+            "gameData": asdict(gameData)
+        }
+    else:
+        saveData = []
     with open(save_files[file], "w", encoding="utf-8") as f:
         json.dump(saveData, f, indent=4)
 

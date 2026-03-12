@@ -21,11 +21,6 @@ screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), pygame.FULLSCREEN | 
 
 clock = pygame.time.Clock()
 
-def get_game_folder():
-    return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
-
-runing = True
-
 # ======================================
 # SECTION: FUNCS
 # ======================================
@@ -67,12 +62,51 @@ def playFloor(player, enemies, gameData):
 def play(file):
     player, enemies, gameData = Defult()
     player, enemies, gameData = Load(player, enemies, gameData, file)
+    runing = True
+    
+    buttons = [
+        Button(f"Load Save 1", pygame.Rect(BASE_WIDTH//5-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"Load Save 2", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"Load Save 3", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        create_back_button()
+    ]
     if player.HP > 0:
         if gameData.floor > 5:
             pass
     else:
         return "dead"
-    while True:
+    while runing:
+        clock.tick(30)
+        screen.fill(CO.BLACK[3])
+
+        for i, btn in enumerate(buttons):
+            is_selected = (i == selected_index)
+            btn.draw(screen, is_selected=is_selected)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            elif event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                is_hovering = False
+                for i, btn in enumerate(buttons):
+                    if btn.rect.collidepoint(pos):
+                        selected_index = i
+                        is_hovering = True
+                    elif is_hovering == False:
+                        selected_index = None
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for i, btn in enumerate(buttons):
+                    if btn.is_clicked(pos):
+                        selected_index = i
+                        break
+            
+                if selected_index == 0:
+                    play(0)
         if gameData.endless or gameData.floor < 6:
             if gameData.part == 11:
                 gameData.part = 0
@@ -94,7 +128,6 @@ def play(file):
 # ======================================
 # SECTION: PRE/POST GAME
 # ======================================
-
 
 def GameMenu():
     runing = True
@@ -229,12 +262,14 @@ def GameMenu():
                 elif selected_index == len(buttons) - 1:
                     return
 
-
         pygame.display.flip()
 
 def Start():
     selected_index = None
     last_selected_index = 0
+
+    runing = True
+
     bg = pygame.image.load(ResourcePath("assets/img/mainMenu.png")).convert_alpha()
     bg = pygame.transform.scale(bg, (BASE_WIDTH, BASE_HEIGHT))
 
@@ -242,7 +277,6 @@ def Start():
         Button(f"Start Game", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT//2-60, 200, 60), CO.BLUE[2]),
         Button(f"no clue", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT//2+60, 200, 60), CO.BLUE[2]),
         create_back_button(back=False)
-        # Button(f"Start Game", pygame.Rect(BASE_WIDTH // 2 + 100, BASE_HEIGHT // 2, 200, 60), CO.BLUE[2])
     ]
 
     title = Data.title_font.render("Card N Dungeon", True, (255, 255, 255))
@@ -250,7 +284,7 @@ def Start():
     while runing:
         clock.tick(30)
         screen.blit(bg, (0, 0))
-        screen.blit(title, (BASE_WIDTH//2 - title.get_width()//2, 50))
+        screen.blit(title, (BASE_WIDTH//2-title.get_width()//2, 50))
 
         for i, btn in enumerate(buttons):
             is_selected = (i == selected_index)
@@ -284,7 +318,6 @@ def Start():
 
                 elif selected_index == 1:
                     pass
-                    # GameMenu()
 
                 elif selected_index == len(buttons) - 1:
                     pygame.quit()
