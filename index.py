@@ -59,15 +59,15 @@ def playFloor(player, enemies, gameData):
 # SECTION: LVL LOGIC
 # ======================================
 
-def play(file):
-    player, enemies, gameData = Defult()
-    player, enemies, gameData = Load(player, enemies, gameData, file)
+def play(player, enemies, gameData):
     runing = True
+    selected_index = None
     
     buttons = [
-        Button(f"Load Save 1", pygame.Rect(BASE_WIDTH//5-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
-        Button(f"Load Save 2", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
-        Button(f"Load Save 3", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"attack", pygame.Rect(100, BASE_HEIGHT-150, 100, 30), CO.BLUE[2]),
+        Button(f"heal", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"block", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"rest", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
         create_back_button()
     ]
     if player.HP > 0:
@@ -106,28 +106,43 @@ def play(file):
                         break
             
                 if selected_index == 0:
-                    play(0)
-        if gameData.endless or gameData.floor < 6:
-            if gameData.part == 11:
-                gameData.part = 0
-                enemies.generateBoss(gameData)
-                gameData.floor += 1
-            elif not enemies.current:
-                enemies.generate(gameData)
-            result = playFloor(player, enemies, gameData)
-            if result == "dead":
-                return "dead"
-            elif gameData.part == 0:
-                Save(player, enemies, gameData, file)
-            elif gameData.part == 5:
-                enemies.difficultyUp(gameData)
-            gameData.part += 1
-        else:
-            pass
+                    pass
+
+                elif selected_index == len(buttons) - 1:
+                    pass
 
 # ======================================
 # SECTION: PRE/POST GAME
 # ======================================
+
+def Won():
+    pass
+
+def Dead():
+    pass
+    # death in endless should be separate
+
+def GameManager(file):
+    player, enemies, gameData = Load(Defult(), file)
+    play(0)
+    if gameData.endless or gameData.floor < 6:
+        if gameData.part == 11:
+            gameData.part = 0
+            enemies.generateBoss(gameData)
+            gameData.floor += 1
+        elif not enemies.current:
+            enemies.generate(gameData)
+        result = playFloor(player, enemies, gameData)
+        if result == "dead":
+            Dead()
+            return
+        elif gameData.part == 0:
+            Save(player, enemies, gameData, file)
+        elif gameData.part == 5:
+            enemies.difficultyUp(gameData)
+        gameData.part += 1
+    else:
+        pass
 
 def GameMenu():
     runing = True
@@ -184,13 +199,13 @@ def GameMenu():
                         break
             
                 if selected_index == 0:
-                    play(0)
+                    GameManager(0)
 
                 elif selected_index == 1:
-                    play(1)
+                    GameManager(1)
 
                 elif selected_index == 2:
-                    play(2)
+                    GameManager(2)
 
                 elif selected_index == len(buttons) - 1:
                     return
