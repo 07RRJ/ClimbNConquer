@@ -62,49 +62,53 @@ clock = pygame.time.Clock()
 def play(player, enemies, gameData):
     runing = True
     playerTurn = True
-    selected_index = None
+    selectedIdx = None
+    selectedEnemyIdx = None
     
     bg = pygame.image.load(ResourcePath("assets/img/ability_menu.png")).convert_alpha()
     bg = pygame.transform.scale(bg, (BASE_WIDTH, BASE_HEIGHT))
+    block = pygame.image.load(ResourcePath("assets/img/block.png")).convert_alpha()
+    block = pygame.transform.scale(block, (78, 78))
 
     buttons = [
         # row 1
         Button(f"attack", pygame.Rect(32, BASE_HEIGHT-62, 100, 30), CO.RED[2]),
         Button(f"heal", pygame.Rect(164, BASE_HEIGHT-62, 100, 30), CO.GREEN[2]),
         Button(f"block", pygame.Rect(296, BASE_HEIGHT-62, 100, 30), CO.BLUE[2]),
-        Button(f"rest", pygame.Rect(428, BASE_HEIGHT-62, 100, 30), CO.YELLOW[1]),
+        Button(f"rest", pygame.Rect(428, BASE_HEIGHT-62, 100, 30), CO.YELLOW[2]),
         # row 2
         Button(f"aoe", pygame.Rect(32, BASE_HEIGHT-102, 100, 30), CO.RED[2]),
         Button(f"regen", pygame.Rect(164, BASE_HEIGHT-102, 100, 30), CO.GREEN[2]),
         Button(f"fortress", pygame.Rect(296, BASE_HEIGHT-102, 100, 30), CO.BLUE[2]),
-        Button(f"meditate", pygame.Rect(428, BASE_HEIGHT-102, 100, 30), CO.YELLOW[1]),
+        Button(f"meditate", pygame.Rect(428, BASE_HEIGHT-102, 100, 30), CO.YELLOW[2]),
         # row 3
         Button(f"nuke", pygame.Rect(32, BASE_HEIGHT-144, 100, 30), CO.RED[2]),
         create_back_button()
     ]
 
 
-    status_bars = [
+    statusBars = [
         (Bar(CO.BLACK[1], 30, 30, 304, 34, None)),
         (Bar(CO.GREEN[3], 32, 32, 300, 30, (player, "HP", "MAX_HP"))),
         (Bar(CO.BLACK[1], 30, 76, 304, 34, None)),
-        (Bar(CO.YELLOW[1], 32, 78, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
+        (Bar(CO.YELLOW[2], 32, 78, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
     ]
 
-    # displayDef =  Data.title_font.render(f"{player.DEF}", True, (255, 255, 255))
-    
+    displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
+
     while runing:
         clock.tick(30)
         screen.fill(CO.BLACK[4])
         screen.blit(bg, (0, 0))
+        screen.blit(block, (350, 30))
 
-        # displayDef.blit(0, 0)
+        screen.blit(displayDef, displayDef.get_rect(center=(389, 69)))
 
         for i, btn in enumerate(buttons):
-            is_selected = (i == selected_index)
+            is_selected = (i == selectedIdx)
             btn.draw(screen, is_selected=is_selected)
         
-        for bar in status_bars:
+        for bar in statusBars:
             bar.draw(screen)
 
         for event in pygame.event.get():
@@ -117,49 +121,51 @@ def play(player, enemies, gameData):
                 is_hovering = False
                 for i, btn in enumerate(buttons):
                     if btn.rect.collidepoint(pos):
-                        selected_index = i
+                        selectedIdx = i
                         is_hovering = True
                     elif is_hovering == False:
-                        selected_index = None
+                        selectedIdx = None
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
-                        selected_index = i
+                        selectedIdx = i
                         break
             
-                if selected_index == len(buttons) - 1:
+                if selectedIdx == len(buttons) - 1:
                     return
 
                 elif playerTurn:
-                    if selected_index == 0:
-                        playerTurn = False
+                    if selectedIdx == 0:
                         player.Attack()
-
-                    elif selected_index == 1:
                         playerTurn = False
+
+                    elif selectedIdx == 1:
                         player.Heal()
-
-                    elif selected_index == 2:
                         playerTurn = False
+
+                    elif selectedIdx == 2:
                         player.Block()
-                        # displayDef =  Data.title_font.render(player.DEF, True, (255, 255, 255))
-
-                    elif selected_index == 3:
                         playerTurn = False
+                        displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
+
+                    elif selectedIdx == 3:
                         player.Rest()
+                        playerTurn = False
 
-                    elif selected_index == 4:
+                    elif selectedIdx == 4:
                         playerTurn = False
                         pass
 
-                    elif selected_index == 5:
+                    elif selectedIdx == 5:
                         playerTurn = False
                         pass
-                else:
-                    for enemy in enemies.current:
-                        enemy.Move(player, enemies, gameData)
+        if not playerTurn:
+            for enemy in enemies.current:
+                enemy.Move(player, enemies, gameData)
+            displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
+            playerTurn = True
 
         pygame.display.flip()
 
@@ -198,7 +204,7 @@ def GameManager(file):
 
 def GameMenu():
     runing = True
-    selected_index = None
+    selectedIdx = None
 
     title = Data.title_font.render("SELECT SAVE", True, (255, 255, 255))
 
@@ -219,7 +225,7 @@ def GameMenu():
         screen.blit(title, (BASE_WIDTH//2 - title.get_width()//2, 50))
 
         for i, btn in enumerate(buttons):
-            is_selected = (i == selected_index)
+            is_selected = (i == selectedIdx)
             btn.draw(screen, is_selected=is_selected)
         
         for data in saveImgs:
@@ -240,37 +246,37 @@ def GameMenu():
                 is_hovering = False
                 for i, btn in enumerate(buttons):
                     if btn.rect.collidepoint(pos):
-                        selected_index = i
+                        selectedIdx = i
                         is_hovering = True
                     elif is_hovering == False:
-                        selected_index = None
+                        selectedIdx = None
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
-                        selected_index = i
+                        selectedIdx = i
                         break
 
-                if selected_index == len(buttons) - 1:
+                if selectedIdx == len(buttons) - 1:
                     return
             
-                elif selected_index == 0:
+                elif selectedIdx == 0:
                     GameManager(0)
                     saveImgs, saveInfo = GetSaves()
 
-                elif selected_index == 1:
+                elif selectedIdx == 1:
                     GameManager(1)
                     saveImgs, saveInfo = GetSaves()
 
-                elif selected_index == 2:
+                elif selectedIdx == 2:
                     GameManager(2)
                     saveImgs, saveInfo = GetSaves()
 
         pygame.display.flip()
 
 def Start():
-    selected_index = None
+    selectedIdx = None
     last_selected_index = 0
 
     runing = True
@@ -292,7 +298,7 @@ def Start():
         screen.blit(title, (BASE_WIDTH//2-title.get_width()//2, 50))
 
         for i, btn in enumerate(buttons):
-            is_selected = (i == selected_index)
+            is_selected = (i == selectedIdx)
             btn.draw(screen, is_selected=is_selected)
         
         for event in pygame.event.get():
@@ -305,27 +311,27 @@ def Start():
                 is_hovering = False
                 for i, btn in enumerate(buttons):
                     if btn.rect.collidepoint(pos):
-                        selected_index = i
+                        selectedIdx = i
                         last_selected_index = i
                         is_hovering = True
                     elif is_hovering == False:
-                        selected_index = None
+                        selectedIdx = None
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
-                        selected_index = i
+                        selectedIdx = i
                         break
 
-                if selected_index == len(buttons) - 1:
+                if selectedIdx == len(buttons) - 1:
                     pygame.quit()
                     sys.exit()
 
-                elif selected_index == 0:
+                elif selectedIdx == 0:
                     GameMenu()
 
-                elif selected_index == 1:
+                elif selectedIdx == 1:
                     pass
 
         pygame.display.flip()

@@ -1,6 +1,7 @@
 import random as rng
 from gameFuncs import Attack
 from dataclasses import dataclass, field
+# from uiData import Mobs
 
 @dataclass
 class Enemies:
@@ -83,11 +84,17 @@ class Slime:
 
         self.STR = 1 + int(1 * multi)
         self.ABILITIES = ["ATTACK", "PASS"]
+        self.MOVE = rng.choice(self.ABILITIES)
+
+        # self.IMG = slime
 
     def Move(self, player, enemies, gameData):
-        enemyMove = rng.choice(self.ABILITIES)
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
+        self.MOVE = rng.choice(self.ABILITIES)
+
+    def Draw(self, screen, x, y):
+        screen.blit(self.IMG, x, y)
 
 class Rat:
     TYPE = "Rat"
@@ -107,11 +114,12 @@ class Rat:
 
         self.STR = 2 + int(multi)
         self.ABILITIES = ["ATTACK"]
+        self.MOVE = rng.choice(self.ABILITIES)
 
     def Move(self, player, enemies, gameData):
-        enemyMove = rng.choice(self.ABILITIES)
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
+        self.MOVE = rng.choice(self.ABILITIES)
 
 class Boar:
     TYPE = "Boar"
@@ -131,16 +139,17 @@ class Boar:
 
         self.STR = int(1.5 + 1.5 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
+        self.MOVE = rng.choice(self.ABILITIES)
 
     def Move(self, player, enemies, gameData):
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = rng.choice(self.ABILITIES)
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
-        elif enemyMove == "BLOCK":
+        elif self.MOVE == "BLOCK":
             self.DEF += self.BLOCK
+        self.MOVE = rng.choice(self.ABILITIES)
 
 class Goblin:
     TYPE = "Goblin"
