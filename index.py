@@ -157,6 +157,8 @@ def GameMenu():
         create_back_button()
     ]
 
+# https://stackoverflow.com/questions/36272029/clickable-images-in-pygame
+
     saveImgs, saveInfo = GetSaves()
 
     while runing:
