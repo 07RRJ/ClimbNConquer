@@ -6,7 +6,7 @@ from dataclasses import dataclass, asdict
 from saveAndLoad import Defult, Save, Load
 import pygame
 from uiData import Colours as CO
-from uiElements import Button, create_back_button, GetSaves
+from uiElements import Button, Bar, create_back_button, GetSaves
 from gameFuncs import GetGameFolder, ResourcePath
 from uiData import Data
 
@@ -31,29 +31,29 @@ clock = pygame.time.Clock()
 # SECTION: THE GAME LOOP STUFF
 # ======================================
 
-def playFloor(player, enemies, gameData):
-    player.DEF = 0
-    gameData.turn = 0
-    player.STAMINA = player.BASE_STAMINA
-    while True:
-        if enemies.current and player.HP > 0:
-            gameData.turn += 1
-            if gameData.part != 0:
-                pass
-            else:
-                pass
-            enemies.GetEnemyStats()
-            player.Move(gameData, enemies)
+# def playFloor(player, enemies, gameData):
+#     player.DEF = 0
+#     gameData.turn = 0
+#     player.STAMINA = player.BASE_STAMINA
+#     while True:
+#         if enemies.current and player.HP > 0:
+#             gameData.turn += 1
+#             if gameData.part != 0:
+#                 pass
+#             else:
+#                 pass
+#             enemies.GetEnemyStats()
+#             player.Move(gameData, enemies)
 
-            for enemy in enemies.current:
-                enemy.Move(player, enemies, gameData)
+#             for enemy in enemies.current:
+#                 enemy.Move(player, enemies, gameData)
 
-        gameData.totalTurns += gameData.turn
-        if not enemies.current:
-            player.ExpUp()
-            return "won"
-        elif player.HP <= 0:
-            return "dead"
+#         gameData.totalTurns += gameData.turn
+#         if not enemies.current:
+#             player.ExpUp()
+#             return "won"
+#         elif player.HP <= 0:
+#             return "dead"
 
 # ======================================
 # SECTION: LVL LOGIC
@@ -64,17 +64,26 @@ def play(player, enemies, gameData):
     selected_index = None
     
     buttons = [
-        Button(f"attack", pygame.Rect(100, BASE_HEIGHT-150, 100, 30), CO.BLUE[2]),
-        Button(f"heal", pygame.Rect(BASE_WIDTH//2-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
-        Button(f"block", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
-        Button(f"rest", pygame.Rect(BASE_WIDTH//5*4-100, BASE_HEIGHT-150, 200, 60), CO.BLUE[2]),
+        Button(f"attack", pygame.Rect(32, BASE_HEIGHT-64, 100, 30), CO.RED[2]),
+        Button(f"heal", pygame.Rect(164, BASE_HEIGHT-64, 100, 30), CO.GREEN[2]),
+        Button(f"block", pygame.Rect(296, BASE_HEIGHT-64, 100, 30), CO.BLUE[2]),
+        Button(f"rest", pygame.Rect(428, BASE_HEIGHT-64, 100, 30), CO.YELLOW[1]),
         create_back_button()
     ]
-    if player.HP > 0:
-        if gameData.floor > 5:
-            pass
-    else:
-        return "dead"
+
+    status_bars = [
+        (Bar(CO.BLACK[1], 98, 98, 304, 34, None)),
+        (Bar(CO.GREEN[3], 100, 100, 300, 30, (player, "HP", "MAX_HP"))),
+        (Bar(CO.BLACK[1], 98, 198, 304, 34, None)),
+        (Bar(CO.YELLOW[1], 100, 200, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
+    ]
+    # status_bars = [
+    #     (Bar(CO.BLACK[1], 98, 98, 304, 34)),
+    #     (Bar(CO.GREEN[3], 100, 100, 300, 30)),
+    #     (Bar(CO.BLACK[1], 98, 198, 304, 34)),
+    #     (Bar(CO.YELLOW[1], 200, 200, 300, 30))
+    # ]
+
     while runing:
         clock.tick(30)
         screen.fill(CO.BLACK[3])
@@ -82,6 +91,9 @@ def play(player, enemies, gameData):
         for i, btn in enumerate(buttons):
             is_selected = (i == selected_index)
             btn.draw(screen, is_selected=is_selected)
+        
+        for bar in status_bars:
+            bar.draw(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -105,11 +117,28 @@ def play(player, enemies, gameData):
                         selected_index = i
                         break
             
-                if selected_index == 0:
+                if selected_index == len(buttons) - 1:
+                    return
+
+                elif selected_index == 0:
+                    player.Attack()
+
+                elif selected_index == 1:
+                    player.Heal()
+
+                elif selected_index == 2:
+                    player.Block()
+
+                elif selected_index == 3:
+                    player.Rest()
+
+                elif selected_index == 4:
                     pass
 
-                elif selected_index == len(buttons) - 1:
+                elif selected_index == 5:
                     pass
+
+        pygame.display.flip()
 
 # ======================================
 # SECTION: PRE/POST GAME
@@ -123,8 +152,8 @@ def Dead():
     # death in endless should be separate
 
 def GameManager(file):
-    player, enemies, gameData = Load(Defult(), file)
-    play(0)
+    player, enemies, gameData = Defult()
+    player, enemies, gameData = Load(player, enemies, gameData, file)
     if gameData.endless or gameData.floor < 6:
         if gameData.part == 11:
             gameData.part = 0
@@ -132,7 +161,7 @@ def GameManager(file):
             gameData.floor += 1
         elif not enemies.current:
             enemies.generate(gameData)
-        result = playFloor(player, enemies, gameData)
+        result = play(player, enemies, gameData)
         if result == "dead":
             Dead()
             return
@@ -199,8 +228,11 @@ def GameMenu():
                     if btn.is_clicked(pos):
                         selected_index = i
                         break
+
+                if selected_index == len(buttons) - 1:
+                    return
             
-                if selected_index == 0:
+                elif selected_index == 0:
                     GameManager(0)
 
                 elif selected_index == 1:
@@ -208,9 +240,6 @@ def GameMenu():
 
                 elif selected_index == 2:
                     GameManager(2)
-
-                elif selected_index == len(buttons) - 1:
-                    return
 
         pygame.display.flip()
 
@@ -263,15 +292,15 @@ def Start():
                         selected_index = i
                         break
 
-                if selected_index == 0:
+                if selected_index == len(buttons) - 1:
+                    pygame.quit()
+                    sys.exit()
+
+                elif selected_index == 0:
                     GameMenu()
 
                 elif selected_index == 1:
                     pass
-
-                elif selected_index == len(buttons) - 1:
-                    pygame.quit()
-                    sys.exit()
 
         pygame.display.flip()
 

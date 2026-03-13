@@ -51,7 +51,29 @@ def create_back_button(back = True):
         return Button("Back", pygame.Rect(button_x, button_y, button_width, button_height), CO.RED[2])
     else:
         return Button("Quit", pygame.Rect(button_x, button_y, button_width, button_height), CO.RED[2])
-    
+
+@dataclass(slots=True)
+class Bar:
+    colour: tuple
+    x: float
+    y: float
+    width: int
+    height: int
+    text: tuple
+    # rect: pygame.Rect
+
+    def draw(self, screen):
+        if self.text:
+            value = getattr(self.text[0], self.text[1])
+            value1 = getattr(self.text[0], self.text[2])
+            rect = pygame.Rect(self.x, self.y, self.width*value//value1, self.height)
+            pygame.draw.rect(screen, self.colour, rect)
+            
+            text = Data.text_font.render(f"{value}/{value1}", True, (CO.BLACK[3]))
+            screen.blit(text, text.get_rect(center=(self.x+self.width//2, self.y+self.height//2)))
+        else:
+            rect = pygame.Rect(self.x, self.y, self.width, self.height)
+            pygame.draw.rect(screen, self.colour, rect)
 
 def GetSaves():
     saveInfo = []
