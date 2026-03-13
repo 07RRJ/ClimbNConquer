@@ -86,7 +86,6 @@ def play(player, enemies, gameData):
         create_back_button()
     ]
 
-
     statusBars = [
         (Bar(CO.BLACK[1], 30, 30, 304, 34, None)),
         (Bar(CO.GREEN[3], 32, 32, 300, 30, (player, "HP", "MAX_HP"))),
@@ -107,7 +106,16 @@ def play(player, enemies, gameData):
         for i, btn in enumerate(buttons):
             is_selected = (i == selectedIdx)
             btn.draw(screen, is_selected=is_selected)
-        
+
+        for idx, enemy in enumerate(enemies.current):
+            enemyHp = Data.text_font.render(f"{enemy.HP}", True, (30, 200, 30))
+            if idx % 2 == 0:
+                enemy.Draw(screen, BASE_WIDTH-230-120*idx, 100)
+                screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 300))
+            if idx % 2 == 1:
+                enemy.Draw(screen, BASE_WIDTH-230-120*idx, 260)
+                screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 460))
+
         for bar in statusBars:
             bar.draw(screen)
 

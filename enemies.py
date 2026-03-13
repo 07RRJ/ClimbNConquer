@@ -2,6 +2,8 @@ import random as rng
 from gameFuncs import Attack
 from dataclasses import dataclass, field
 # from uiData import Mobs
+import pygame
+from gameFuncs import ResourcePath
 
 @dataclass
 class Enemies:
@@ -14,7 +16,8 @@ class Enemies:
         pass
 
     def generate(self, gameData):
-        xEnemies = rng.choice(self.amountEnemies)
+        # xEnemies = rng.choice(self.amountEnemies)
+        xEnemies = 9
         generatedEnemies = []
         for i in range(xEnemies):
             enemy = rng.choice(self.possible)
@@ -86,7 +89,8 @@ class Slime:
         self.ABILITIES = ["ATTACK", "PASS"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        # self.IMG = slime
+        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.transform.scale(self.IMG, (200, 200))
 
     def Move(self, player, enemies, gameData):
         if self.MOVE == "ATTACK":
@@ -94,7 +98,7 @@ class Slime:
         self.MOVE = rng.choice(self.ABILITIES)
 
     def Draw(self, screen, x, y):
-        screen.blit(self.IMG, x, y)
+        screen.blit(self.IMG, (x, y))
 
 class Rat:
     TYPE = "Rat"
