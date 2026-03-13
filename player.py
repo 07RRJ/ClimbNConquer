@@ -45,11 +45,13 @@ class Player:
         print("Attack")
 
     def Heal(self):
-        print("Heal")
+        # if self.HP < self.MAX_HP:
+        self.HP += self.HEAL
+        if self.HP > self.MAX_HP:
+            self.HP = self.MAX_HP
 
     def Block(self):
         self.DEF += self.BLOCK
-        print("Block")
 
     def Rest(self):
         if self.STAMINA < self.MAX_STAMINA:

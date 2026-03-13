@@ -61,32 +61,44 @@ clock = pygame.time.Clock()
 
 def play(player, enemies, gameData):
     runing = True
+    playerTurn = True
     selected_index = None
     
+    bg = pygame.image.load(ResourcePath("assets/img/ability_menu.png")).convert_alpha()
+    bg = pygame.transform.scale(bg, (BASE_WIDTH, BASE_HEIGHT))
+
     buttons = [
-        Button(f"attack", pygame.Rect(32, BASE_HEIGHT-64, 100, 30), CO.RED[2]),
-        Button(f"heal", pygame.Rect(164, BASE_HEIGHT-64, 100, 30), CO.GREEN[2]),
-        Button(f"block", pygame.Rect(296, BASE_HEIGHT-64, 100, 30), CO.BLUE[2]),
-        Button(f"rest", pygame.Rect(428, BASE_HEIGHT-64, 100, 30), CO.YELLOW[1]),
+        # row 1
+        Button(f"attack", pygame.Rect(32, BASE_HEIGHT-62, 100, 30), CO.RED[2]),
+        Button(f"heal", pygame.Rect(164, BASE_HEIGHT-62, 100, 30), CO.GREEN[2]),
+        Button(f"block", pygame.Rect(296, BASE_HEIGHT-62, 100, 30), CO.BLUE[2]),
+        Button(f"rest", pygame.Rect(428, BASE_HEIGHT-62, 100, 30), CO.YELLOW[1]),
+        # row 2
+        Button(f"aoe", pygame.Rect(32, BASE_HEIGHT-102, 100, 30), CO.RED[2]),
+        Button(f"regen", pygame.Rect(164, BASE_HEIGHT-102, 100, 30), CO.GREEN[2]),
+        Button(f"fortress", pygame.Rect(296, BASE_HEIGHT-102, 100, 30), CO.BLUE[2]),
+        Button(f"meditate", pygame.Rect(428, BASE_HEIGHT-102, 100, 30), CO.YELLOW[1]),
+        # row 3
+        Button(f"nuke", pygame.Rect(32, BASE_HEIGHT-144, 100, 30), CO.RED[2]),
         create_back_button()
     ]
 
-    status_bars = [
-        (Bar(CO.BLACK[1], 98, 98, 304, 34, None)),
-        (Bar(CO.GREEN[3], 100, 100, 300, 30, (player, "HP", "MAX_HP"))),
-        (Bar(CO.BLACK[1], 98, 198, 304, 34, None)),
-        (Bar(CO.YELLOW[1], 100, 200, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
-    ]
-    # status_bars = [
-    #     (Bar(CO.BLACK[1], 98, 98, 304, 34)),
-    #     (Bar(CO.GREEN[3], 100, 100, 300, 30)),
-    #     (Bar(CO.BLACK[1], 98, 198, 304, 34)),
-    #     (Bar(CO.YELLOW[1], 200, 200, 300, 30))
-    # ]
 
+    status_bars = [
+        (Bar(CO.BLACK[1], 30, 30, 304, 34, None)),
+        (Bar(CO.GREEN[3], 32, 32, 300, 30, (player, "HP", "MAX_HP"))),
+        (Bar(CO.BLACK[1], 30, 76, 304, 34, None)),
+        (Bar(CO.YELLOW[1], 32, 78, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
+    ]
+
+    # displayDef =  Data.title_font.render(f"{player.DEF}", True, (255, 255, 255))
+    
     while runing:
         clock.tick(30)
-        screen.fill(CO.BLACK[3])
+        screen.fill(CO.BLACK[4])
+        screen.blit(bg, (0, 0))
+
+        # displayDef.blit(0, 0)
 
         for i, btn in enumerate(buttons):
             is_selected = (i == selected_index)
@@ -120,23 +132,34 @@ def play(player, enemies, gameData):
                 if selected_index == len(buttons) - 1:
                     return
 
-                elif selected_index == 0:
-                    player.Attack()
+                elif playerTurn:
+                    if selected_index == 0:
+                        playerTurn = False
+                        player.Attack()
 
-                elif selected_index == 1:
-                    player.Heal()
+                    elif selected_index == 1:
+                        playerTurn = False
+                        player.Heal()
 
-                elif selected_index == 2:
-                    player.Block()
+                    elif selected_index == 2:
+                        playerTurn = False
+                        player.Block()
+                        # displayDef =  Data.title_font.render(player.DEF, True, (255, 255, 255))
 
-                elif selected_index == 3:
-                    player.Rest()
+                    elif selected_index == 3:
+                        playerTurn = False
+                        player.Rest()
 
-                elif selected_index == 4:
-                    pass
+                    elif selected_index == 4:
+                        playerTurn = False
+                        pass
 
-                elif selected_index == 5:
-                    pass
+                    elif selected_index == 5:
+                        playerTurn = False
+                        pass
+                else:
+                    for enemy in enemies.current:
+                        enemy.Move(player, enemies, gameData)
 
         pygame.display.flip()
 
@@ -192,7 +215,7 @@ def GameMenu():
 
     while runing:
         clock.tick(30)
-        screen.fill(CO.BLACK[3])
+        screen.fill(CO.BLACK[4])
         screen.blit(title, (BASE_WIDTH//2 - title.get_width()//2, 50))
 
         for i, btn in enumerate(buttons):
@@ -234,12 +257,15 @@ def GameMenu():
             
                 elif selected_index == 0:
                     GameManager(0)
+                    saveImgs, saveInfo = GetSaves()
 
                 elif selected_index == 1:
                     GameManager(1)
+                    saveImgs, saveInfo = GetSaves()
 
                 elif selected_index == 2:
                     GameManager(2)
+                    saveImgs, saveInfo = GetSaves()
 
         pygame.display.flip()
 
