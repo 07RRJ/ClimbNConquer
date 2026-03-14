@@ -91,14 +91,21 @@ class Slime:
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
+        self.rect = None
 
     def Move(self, player, enemies, gameData):
         if self.MOVE == "ATTACK":
             Attack(self.STR, player)
         self.MOVE = rng.choice(self.ABILITIES)
 
-    def Draw(self, screen, x, y):
-        screen.blit(self.IMG, (x, y))
+    def Draw(self, screen, x, y, selected):
+        self.rect = pygame.Rect(x, y, 200, 200)
+        if selected: 
+            screen.blit(self.SELECTED_IMG, (x, y))
+        else:
+            screen.blit(self.IMG, (x, y))
 
 class Rat:
     TYPE = "Rat"

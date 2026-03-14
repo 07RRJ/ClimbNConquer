@@ -41,8 +41,14 @@ class Player:
             f", REST ({self.STAMINA_REGEN})"
         ]
 
-    def Attack(self):
-        print("Attack")
+    def Attack(self, gameData, enemies, idx):
+        print(idx)
+        enemy = enemies.current[idx]
+        enemy.DEF -= self.STR
+        if enemy.DEF < 0:
+            enemy.HP += enemy.DEF
+            enemy.DEF = 0
+        enemies.killed(self, gameData)
 
     def Heal(self):
         # if self.HP < self.MAX_HP:
