@@ -16,8 +16,7 @@ class Enemies:
         pass
 
     def generate(self, gameData):
-        # xEnemies = rng.choice(self.amountEnemies)
-        xEnemies = 9
+        xEnemies = rng.choice(self.amountEnemies)
         generatedEnemies = []
         for i in range(xEnemies):
             enemy = rng.choice(self.possible)

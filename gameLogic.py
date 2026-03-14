@@ -14,7 +14,7 @@ clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
 def play(player, enemies, gameData, screen):
-    runing = True
+    # runing = True
     playerTurn = True
     selectedIdx = None
     selectedEnemyIdx = None
@@ -49,7 +49,7 @@ def play(player, enemies, gameData, screen):
 
     displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
 
-    while runing:
+    while player.HP > 0 and enemies.current:
         clock.tick(30)
         screen.fill(CO.BLACK[4])
         screen.blit(bg, (0, 0))
@@ -67,7 +67,7 @@ def play(player, enemies, gameData, screen):
             if idx % 2 == 0:
                 enemy.Draw(screen, BASE_WIDTH-230-120*idx, 100, isSelected)
                 screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 300))
-            if idx % 2 == 1:
+            elif idx % 2 == 1:
                 enemy.Draw(screen, BASE_WIDTH-230-120*idx, 320, isSelected)
                 screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 520))
 
@@ -82,31 +82,31 @@ def play(player, enemies, gameData, screen):
             elif event.type == pygame.MOUSEMOTION:
                 pos = pygame.mouse.get_pos()
                 isHovering = False
-                for i, btn in enumerate(buttons):
+                for idx, btn in enumerate(buttons):
                     if btn.rect.collidepoint(pos):
-                        selectedIdx = i
+                        selectedIdx = idx
                         isHovering = True
                     elif isHovering == False:
                         selectedIdx = None
-                for i, enemy in enumerate(enemies.current):
+                for idx, enemy in enumerate(enemies.current):
                     if enemy.rect.collidepoint(pos):
-                        selectedEnemyIdx = i
+                        selectedEnemyIdx = idx
                         isHovering = True
                     elif isHovering == False:
                         selectedEnemyIdx = None
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                for i, btn in enumerate(buttons):
+                for idx, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
-                        selectedIdx = i
+                        selectedIdx = idx
                         break
-                for i, enemy in enumerate(enemies.current):
+                for idx, enemy in enumerate(enemies.current):
                     if enemy.rect.collidepoint(pos):
-                        selectedEnemyIdx = i
+                        selectedEnemyIdx = idx
             
                 if selectedIdx == len(buttons) - 1:
-                    return
+                    return "quit"
 
                 elif playerTurn == True:
                     if selectedIdx == 0:
@@ -133,7 +133,7 @@ def play(player, enemies, gameData, screen):
                         playerTurn = False
                         pass
                 elif playerTurn == "Attacking":
-                    if selectedEnemyIdx:
+                    if selectedEnemyIdx != None:
                         player.Attack(gameData, enemies, selectedEnemyIdx)
                         playerTurn = False
                         # selectedIdx = None
@@ -144,6 +144,11 @@ def play(player, enemies, gameData, screen):
             playerTurn = True
 
         pygame.display.flip()
+    
+    if not enemies.current:
+        return "won"
+    elif player.HP <= 0:
+        return "dead"
 
 def Won():
     pass
@@ -153,23 +158,27 @@ def Dead():
     # death in endless should be separate
 
 def GameManager(file, screen):
+    runing = True
     player, enemies, gameData = Defult()
     player, enemies, gameData = Load(player, enemies, gameData, file)
-    if gameData.endless or gameData.floor < 6:
-        if gameData.part == 11:
-            gameData.part = 0
-            enemies.generateBoss(gameData)
-            gameData.floor += 1
-        elif not enemies.current:
-            enemies.generate(gameData)
-        result = play(player, enemies, gameData, screen)
-        if result == "dead":
-            Dead()
-            return
-        elif gameData.part == 0:
+    while runing:
+        if gameData.endless or gameData.floor < 6:
+            if gameData.part == 11:
+                gameData.part = 0
+                enemies.generateBoss(gameData)
+                gameData.floor += 1
+            elif not enemies.current:
+                enemies.generate(gameData)
+            result = play(player, enemies, gameData, screen)
+            if result == "quit":
+                return
+            if result == "dead":
+                Dead()
+                return
+            # elif gameData.part == 0:
+            elif gameData.part == 5:
+                enemies.difficultyUp(gameData)
             Save(player, enemies, gameData, file)
-        elif gameData.part == 5:
-            enemies.difficultyUp(gameData)
-        gameData.part += 1
-    else:
-        pass
+            gameData.part += 1
+        else:
+            pass

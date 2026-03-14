@@ -1,7 +1,7 @@
 {
     "player": {
         "MAX_HP": 20,
-        "HP": 20,
+        "HP": 13,
         "HEAL": 3,
         "DEF": 0,
         "BLOCK": 3,
@@ -14,7 +14,7 @@
         "MAX_STAMINA": 5,
         "MAX_MANA": 5,
         "MANA": 0,
-        "EXP": 0,
+        "EXP": 4,
         "NEXT_LVL": 5,
         "LVL": 0,
         "ABILITIES": [
@@ -72,12 +72,12 @@
     "gameData": {
         "startTime": 1773403331.7080488,
         "floor": 1,
-        "part": 1,
+        "part": 2,
         "totalTurns": 0,
         "turn": 0,
         "endless": false,
         "enemiesKilled": {
-            "Slime": 0,
+            "Slime": 4,
             "Rat": 0,
             "Boar": 0,
             "Goblin": 0,

@@ -72,5 +72,5 @@ def GetSaveData(file):
 
         return data
     except Exception as e:
-        print(e)
+        # print(e)
         return None

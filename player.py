@@ -42,7 +42,6 @@ class Player:
         ]
 
     def Attack(self, gameData, enemies, idx):
-        print(idx)
         enemy = enemies.current[idx]
         enemy.DEF -= self.STR
         if enemy.DEF < 0:
