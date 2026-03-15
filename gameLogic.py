@@ -13,6 +13,97 @@ from uiData import Data
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
+def lvlUp(screen, player):
+    labels = (
+        (f"Max hp", f"{player.MAX_HP}", 2),
+        f"Heal" f"{player.HEAL} + 1",
+        f" {player.BLOCK} + 2",
+        f" {player.STR} + 1",
+        f" {player.MAX_STAMINA} + 1",
+        f" {player.BASE_STAMINA} + 0.2",
+        f" {player.STAMINA_REGEN} + 0.2"
+        # f"Max hp {player.MAX_MANA} + 1",
+        # f"Max hp {player.MANA} + 1",
+    )
+    buttons = []
+
+    for idx, label in enumerate(labels):
+        buttons.append(Button(label, pygame.Rect(32 * idx, BASE_HEIGHT-62, 100, 30), CO.RED[2]))
+    buttons.append(create_back_button())
+
+# ("Max HP", "MAX_HP", 2),
+# ("Heal", "HEAL", 1),
+# ("Block", "BLOCK", 2),
+# ("Strength", "STR", 1),
+# ("Max Stamina", "MAX_STAMINA", 1),
+# ("Start Stamina", "BASE_STAMINA", 0.2),
+# ("Stamina Regen", "STAMINA_REGEN", 0.2),
+# ("Max Mana", "MAX_MANA", 1),
+# ("Start Mana", "MANA", 1),
+
+    while True:
+        clock.tick(30)
+        screen.fill(CO.BLACK[4])
+
+        for idx, btn in enumerate(buttons):
+            isSelected = (idx == selectedIdx)
+            btn.draw(screen, isSelected)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            elif event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                isHovering = False
+                for idx, btn in enumerate(buttons):
+                    if btn.rect.collidepoint(pos):
+                        selectedIdx = idx
+                        isHovering = True
+                    elif isHovering == False:
+                        selectedIdx = None
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for idx, btn in enumerate(buttons):
+                    if btn.is_clicked(pos):
+                        selectedIdx = idx
+                        break
+            
+                if selectedIdx == len(buttons) - 1:
+                    return "quit"
+
+                elif playerTurn:
+                    if selectedIdx == 0:
+                        player.MAX_HP += 2
+
+                    elif selectedIdx == 1:
+                        player.Heal()
+                        playerTurn = False
+
+                    elif selectedIdx == 2:
+                        player.Block()
+                        playerTurn = False
+                        displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
+
+                    elif selectedIdx == 3:
+                        player.Rest()
+                        playerTurn = False
+
+                    elif selectedIdx == 4:
+                        playerTurn = False
+                        pass
+
+        # f"Max hp {player.MAX_HP} + 2",
+        # f"Max hp {player.HEAL} + 1",
+        # f"Max hp {player.BLOCK} + 2",
+        # f"Max hp {player.STR} + 1",
+        # f"Max hp {player.MAX_STAMINA} + 1",
+        # f"Max hp {player.BASE_STAMINA} + 0.2",
+        # f"Max hp {player.STAMINA_REGEN} + 0.2"
+        pygame.display.flip()
+
 def play(player, enemies, gameData, screen):
     # runing = True
     playerTurn = True
@@ -139,7 +230,6 @@ def play(player, enemies, gameData, screen):
                         if selectedEnemyIdx != None:
                             player.Attack(gameData, enemies, selectedEnemyIdx)
                             playerTurn = False
-                            # selectedIdx = None
         if not playerTurn:
             for enemy in enemies.current:
                 enemy.Move(player, enemies, gameData)
@@ -149,6 +239,8 @@ def play(player, enemies, gameData, screen):
         pygame.display.flip()
     
     if not enemies.current:
+        while player.EXP >= player.NEXT_LVL:
+            lvlUp(screen, player)
         return "won"
     elif player.HP <= 0:
         return "dead"
@@ -178,7 +270,6 @@ def GameManager(file, screen):
             if result == "dead":
                 Dead()
                 return
-            # elif gameData.part == 0:
             elif gameData.part == 5:
                 enemies.difficultyUp(gameData)
             Save(player, enemies, gameData, file)
