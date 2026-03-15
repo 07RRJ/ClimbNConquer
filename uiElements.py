@@ -1,6 +1,6 @@
-import pygame, os
+import pygame, time
 from dataclasses import dataclass
-from gameFuncs import GetGameFolder, ResourcePath
+from gameFuncs import ResourcePath
 from saveAndLoad import GetSaveData
 from uiData import Data
 from uiData import Colours as CO
@@ -74,6 +74,25 @@ class Bar:
         else:
             rect = pygame.Rect(self.x, self.y, self.width, self.height)
             pygame.draw.rect(screen, self.colour, rect)
+
+class DamageText:
+    def __init__(self, text, pos, duration=2.0):
+        self.x = pos[0]
+        self.y = pos[1]
+        self.start_time = time.time()
+        self.duration = duration
+        self.text = Data.text_font.render(text, True, (CO.RED[2]))
+        # self.rect = self.image.get_rect(center=(self.x, self.y))
+
+    @property
+    def alive(self):
+        return time.time() - self.start_time < self.duration
+
+    def draw(self, surface):
+        # self.rect = self.image.get_rect(center=(self.x, self.y))
+        surface.blit(self.text, (self.x, self.y))
+        self.y -= 10
+
 
 def GetSaves():
     saveInfo = []

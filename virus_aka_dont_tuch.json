@@ -1,22 +1,22 @@
 {
     "player": {
-        "MAX_HP": 20,
-        "HP": 16,
-        "HEAL": 3,
+        "MAX_HP": 664,
+        "HP": 652,
+        "HEAL": 100,
         "DEF": 0,
         "BLOCK": 3,
         "STR": 6,
         "AOE": 0,
         "MULTI_ATTACK": 0,
-        "BASE_STAMINA": 1,
+        "BASE_STAMINA": 1.7999999999999998,
         "STAMINA": 1,
-        "STAMINA_REGEN": 1,
+        "STAMINA_REGEN": 1.7999999999999998,
         "MAX_STAMINA": 5,
         "MAX_MANA": 5,
-        "MANA": 0,
-        "EXP": 19,
-        "NEXT_LVL": 20,
-        "LVL": 5,
+        "MANA": 3,
+        "EXP": 87,
+        "NEXT_LVL": 866,
+        "LVL": 41,
         "ABILITIES": [
             [
                 "ATTACK",
@@ -54,12 +54,18 @@
         "current": [],
         "possible": [
             "Slime",
-            "Rat"
+            "Rat",
+            "Boar",
+            "Goblin",
+            "Zombie",
+            "Slime",
+            "Rat",
+            "Boar"
         ],
         "amountEnemies": [
-            2,
-            1,
-            2,
+            6,
+            7,
+            8,
             1
         ],
         "enemyTypes": [
@@ -72,22 +78,22 @@
     },
     "gameData": {
         "startTime": 1773597751.7145,
-        "floor": 2,
-        "part": 3,
+        "floor": 7,
+        "part": 5,
         "totalTurns": 0,
         "turn": 0,
         "endless": false,
         "enemiesKilled": {
-            "Slime": 39,
-            "Rat": 6,
-            "Boar": 0,
-            "Goblin": 0,
-            "Zombie": 0,
-            "King Slime": 1,
-            "Rat King": 0,
-            "Royal Boar": 0,
-            "Goblin General": 0,
-            "Lich": 0
+            "Slime": 168,
+            "Rat": 52,
+            "Boar": 41,
+            "Goblin": 34,
+            "Zombie": 22,
+            "King Slime": 2,
+            "Rat King": 1,
+            "Royal Boar": 1,
+            "Goblin General": 1,
+            "Lich": 1
         }
     }
 }

@@ -2,12 +2,12 @@ from gameFuncs import ResourcePath
 import pygame
 from uiData import Colours as CO
 import os, sys
-import random as rng
-from gameFuncs import GetTime
-from dataclasses import dataclass, asdict
+# import random as rng
+# from gameFuncs import GetTime
+# from dataclasses import dataclass, asdict
 from saveAndLoad import Defult, Save, Load
-from uiElements import Button, Bar, create_back_button
-from gameFuncs import GetGameFolder, ResourcePath
+from uiElements import Button, Bar, DamageText, create_back_button
+from gameFuncs import ResourcePath
 from uiData import Data
 
 clock = pygame.time.Clock()
@@ -32,9 +32,8 @@ def lvlUp(screen, player):
     for idx, label in enumerate(labels, 1):
         text, attr, increse = label
         label = f"{text} {getattr(player, attr)} + {increse}"
-        buttons.append(Button(label, pygame.Rect(200 + 200 * idx, BASE_HEIGHT // 3 * (1 + idx % 3), 100, 30), CO.RED[2]))
+        buttons.append(Button(label, pygame.Rect(100 + 100 * idx, BASE_HEIGHT - 100 - BASE_HEIGHT // 3 * (1 + idx % 3), 100, 30), CO.RED[2]))
     buttons.append(create_back_button())
-
 
     while player.EXP >= player.NEXT_LVL:
         clock.tick(30)
@@ -78,6 +77,11 @@ def lvlUp(screen, player):
                     player.LVL += 1
                     player.NEXT_LVL += player.LVL
 
+                    text, attr, increse = labels[selectedIdx]
+                    label = f"{text} {getattr(player, attr)} + {increse}"
+                    buttons[selectedIdx].text = label
+                    buttons[selectedIdx].__post_init__()
+
 
         pygame.display.flip()
 
@@ -116,6 +120,8 @@ def play(player, enemies, gameData, screen):
         (Bar(CO.YELLOW[2], 32, 78, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
     ]
 
+    dmgText = []
+
     displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
 
     while player.HP > 0 and enemies.current:
@@ -132,16 +138,19 @@ def play(player, enemies, gameData, screen):
 
         for idx, enemy in enumerate(enemies.current):
             isSelected = (idx == selectedEnemyIdx)
-            enemyHp = Data.text_font.render(f"{enemy.HP}", True, (30, 200, 30))
             if idx % 2 == 0:
                 enemies.Draw(screen, idx, BASE_WIDTH-230-120*idx, 100, isSelected)
-                screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 300))
             elif idx % 2 == 1:
                 enemies.Draw(screen, idx, BASE_WIDTH-230-120*idx, 320, isSelected)
-                screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 520))
 
         for bar in statusBars:
             bar.draw(screen)
+
+        for dt in dmgText[:]:
+            if dt.alive:
+                dt.draw(screen)
+            else:
+                dmgText.remove(dt)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -205,8 +214,13 @@ def play(player, enemies, gameData, screen):
 
                     elif playerTurn == "Attack" or lastPlayerTurn == "Attack":
                         if selectedEnemyIdx != None:
-                            player.Attack(gameData, enemies, selectedEnemyIdx)
-                            playerTurn = False
+                            try:
+                                player.Attack(gameData, enemies, selectedEnemyIdx)
+                                dmgText.append(DamageText(f"-{player.STR}", pos))
+                                playerTurn = False
+                            except Exception as e:
+                                print(e)
+
         if not playerTurn:
             for enemy in enemies.current:
                 enemy.Move(player, enemies, gameData)
@@ -233,22 +247,22 @@ def GameManager(file, screen):
     player, enemies, gameData = Defult()
     player, enemies, gameData = Load(player, enemies, gameData, file)
     while runing:
-        if gameData.endless or gameData.floor < 6:
-            if gameData.part == 11:
-                gameData.part = 0
-                enemies.generateBoss(gameData)
-                gameData.floor += 1
-            elif not enemies.current:
-                enemies.generate(gameData)
-            result = play(player, enemies, gameData, screen)
-            if result == "quit":
-                return
-            if result == "dead":
-                Dead()
-                return
-            elif gameData.part == 5:
-                enemies.difficultyUp(gameData)
-            Save(player, enemies, gameData, file)
-            gameData.part += 1
-        else:
-            pass
+        # if gameData.endless or gameData.floor < 6:
+        if gameData.part == 11:
+            gameData.part = 0
+            enemies.generateBoss(gameData)
+            gameData.floor += 1
+        elif not enemies.current:
+            enemies.generate(gameData)
+        result = play(player, enemies, gameData, screen)
+        if result == "quit":
+            return
+        if result == "dead":
+            Dead()
+            return
+        elif gameData.part == 5:
+            enemies.difficultyUp(gameData)
+        Save(player, enemies, gameData, file)
+        gameData.part += 1
+        # else:
+        #     pass

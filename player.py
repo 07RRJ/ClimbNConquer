@@ -1,4 +1,4 @@
-from gameFuncs import Attack
+# from gameFuncs import Attack
 from dataclasses import dataclass, field
 
 @dataclass

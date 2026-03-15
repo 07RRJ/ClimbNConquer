@@ -1,9 +1,10 @@
+import pygame
 import random as rng
-from gameFuncs import Attack
+from gameFuncs import Attack, ResourcePath
 from dataclasses import dataclass, field
 # from uiData import Mobs
-import pygame
-from gameFuncs import ResourcePath
+import uiElements
+from uiData import Colours as CO
 
 @dataclass
 class Enemies:
@@ -72,6 +73,9 @@ class Enemies:
             screen.blit(enemy.SELECTED_IMG, (x, y))
         else:
             screen.blit(enemy.IMG, (x, y))
+
+        uiElements.Bar(CO.BLACK[1], x, y+200, 200, 20, None).draw(screen)
+        uiElements.Bar(CO.GREEN[3], x+2, y+202, 196, 16, (enemy, "HP", "MAX_HP")).draw(screen)
 
 # ======================================
 # SECTION: ENEMIES

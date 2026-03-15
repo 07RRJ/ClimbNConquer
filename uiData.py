@@ -1,5 +1,5 @@
-import pygame, os
-from gameFuncs import GetGameFolder, ResourcePath
+import pygame
+from gameFuncs import ResourcePath
 
 class Colours():
     BLACK   = ((10, 10, 10), (50, 50, 50), (100, 100, 100), (150, 150, 150), (200, 200, 200), (250, 250, 250))
