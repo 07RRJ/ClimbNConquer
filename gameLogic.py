@@ -14,34 +14,29 @@ clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
 def lvlUp(screen, player):
+    selectedIdx = None
+
     labels = (
-        (f"Max hp", f"{player.MAX_HP}", 2),
-        f"Heal" f"{player.HEAL} + 1",
-        f" {player.BLOCK} + 2",
-        f" {player.STR} + 1",
-        f" {player.MAX_STAMINA} + 1",
-        f" {player.BASE_STAMINA} + 0.2",
-        f" {player.STAMINA_REGEN} + 0.2"
-        # f"Max hp {player.MAX_MANA} + 1",
-        # f"Max hp {player.MANA} + 1",
+        ("Max HP", "MAX_HP", 2),
+        ("Strength", "STR", 1),
+        ("Max Stamina", "MAX_STAMINA", 1),
+        ("Start Stamina", "BASE_STAMINA", 0.2),
+        ("Heal", "HEAL", 1),
+        ("Block", "BLOCK", 2),
+        ("Stamina Regen", "STAMINA_REGEN", 0.2),
+        ("Max Mana", "MAX_MANA", 1),
+        ("Start Mana", "MANA", 1),
     )
     buttons = []
 
-    for idx, label in enumerate(labels):
-        buttons.append(Button(label, pygame.Rect(32 * idx, BASE_HEIGHT-62, 100, 30), CO.RED[2]))
+    for idx, label in enumerate(labels, 1):
+        text, attr, increse = label
+        label = f"{text} {getattr(player, attr)} + {increse}"
+        buttons.append(Button(label, pygame.Rect(200 + 200 * idx, BASE_HEIGHT // 3 * (1 + idx % 3), 100, 30), CO.RED[2]))
     buttons.append(create_back_button())
 
-# ("Max HP", "MAX_HP", 2),
-# ("Heal", "HEAL", 1),
-# ("Block", "BLOCK", 2),
-# ("Strength", "STR", 1),
-# ("Max Stamina", "MAX_STAMINA", 1),
-# ("Start Stamina", "BASE_STAMINA", 0.2),
-# ("Stamina Regen", "STAMINA_REGEN", 0.2),
-# ("Max Mana", "MAX_MANA", 1),
-# ("Start Mana", "MANA", 1),
 
-    while True:
+    while player.EXP >= player.NEXT_LVL:
         clock.tick(30)
         screen.fill(CO.BLACK[4])
 
@@ -74,34 +69,16 @@ def lvlUp(screen, player):
                 if selectedIdx == len(buttons) - 1:
                     return "quit"
 
-                elif playerTurn:
-                    if selectedIdx == 0:
-                        player.MAX_HP += 2
+                elif selectedIdx != None:
+                    print(labels[selectedIdx])
+                    label, attr_name, increse = labels[selectedIdx]
+                    current = getattr(player, attr_name)
+                    setattr(player, attr_name, current + increse)
+                    player.EXP -= player.NEXT_LVL
+                    player.LVL += 1
+                    player.NEXT_LVL += player.LVL
 
-                    elif selectedIdx == 1:
-                        player.Heal()
-                        playerTurn = False
 
-                    elif selectedIdx == 2:
-                        player.Block()
-                        playerTurn = False
-                        displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
-
-                    elif selectedIdx == 3:
-                        player.Rest()
-                        playerTurn = False
-
-                    elif selectedIdx == 4:
-                        playerTurn = False
-                        pass
-
-        # f"Max hp {player.MAX_HP} + 2",
-        # f"Max hp {player.HEAL} + 1",
-        # f"Max hp {player.BLOCK} + 2",
-        # f"Max hp {player.STR} + 1",
-        # f"Max hp {player.MAX_STAMINA} + 1",
-        # f"Max hp {player.BASE_STAMINA} + 0.2",
-        # f"Max hp {player.STAMINA_REGEN} + 0.2"
         pygame.display.flip()
 
 def play(player, enemies, gameData, screen):
@@ -239,8 +216,7 @@ def play(player, enemies, gameData, screen):
         pygame.display.flip()
     
     if not enemies.current:
-        while player.EXP >= player.NEXT_LVL:
-            lvlUp(screen, player)
+        lvlUp(screen, player)
         return "won"
     elif player.HP <= 0:
         return "dead"
