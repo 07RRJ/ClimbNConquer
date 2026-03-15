@@ -16,6 +16,7 @@ BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 def play(player, enemies, gameData, screen):
     # runing = True
     playerTurn = True
+    lastPlayerTurn = None
     selectedIdx = None
     selectedEnemyIdx = None
     
@@ -65,10 +66,10 @@ def play(player, enemies, gameData, screen):
             isSelected = (idx == selectedEnemyIdx)
             enemyHp = Data.text_font.render(f"{enemy.HP}", True, (30, 200, 30))
             if idx % 2 == 0:
-                enemy.Draw(screen, BASE_WIDTH-230-120*idx, 100, isSelected)
+                enemies.Draw(screen, idx, BASE_WIDTH-230-120*idx, 100, isSelected)
                 screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 300))
             elif idx % 2 == 1:
-                enemy.Draw(screen, BASE_WIDTH-230-120*idx, 320, isSelected)
+                enemies.Draw(screen, idx, BASE_WIDTH-230-120*idx, 320, isSelected)
                 screen.blit(enemyHp, (BASE_WIDTH-230-120*idx, 520))
 
         for bar in statusBars:
@@ -108,9 +109,10 @@ def play(player, enemies, gameData, screen):
                 if selectedIdx == len(buttons) - 1:
                     return "quit"
 
-                elif playerTurn == True:
+                elif playerTurn:
                     if selectedIdx == 0:
-                        playerTurn = "Attacking"
+                        playerTurn = "Attack"
+                        lastPlayerTurn = "Attack"
 
                     elif selectedIdx == 1:
                         player.Heal()
@@ -132,11 +134,12 @@ def play(player, enemies, gameData, screen):
                     elif selectedIdx == 5:
                         playerTurn = False
                         pass
-                elif playerTurn == "Attacking":
-                    if selectedEnemyIdx != None:
-                        player.Attack(gameData, enemies, selectedEnemyIdx)
-                        playerTurn = False
-                        # selectedIdx = None
+
+                    elif playerTurn == "Attack" or lastPlayerTurn == "Attack":
+                        if selectedEnemyIdx != None:
+                            player.Attack(gameData, enemies, selectedEnemyIdx)
+                            playerTurn = False
+                            # selectedIdx = None
         if not playerTurn:
             for enemy in enemies.current:
                 enemy.Move(player, enemies, gameData)
