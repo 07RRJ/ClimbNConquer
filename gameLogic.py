@@ -92,16 +92,9 @@ def lvlUp(screen, player):
                     player.LVL += 1
                     player.NEXT_LVL += player.LVL
 
-                    # text, attr, increse = labels[selectedIdx]
-                    # label = f"{text} {getattr(player, attr)} + {increse}"
-                    # buttons[selectedIdx].text = label
-                    # buttons[selectedIdx].__post_init__()
-
-
         pygame.display.flip()
 
 def play(player, enemies, gameData, screen):
-    # runing = True
     playerTurn = True
     lastPlayerTurn = None
     selectedIdx = None
@@ -141,7 +134,10 @@ def play(player, enemies, gameData, screen):
     dmgText = []
 
     displayDef =  Data.text_font.render(f"{player.DEF}", True, (CO.BLUE[2]))
-    floor =  Data.title_font.render(f"floor {gameData.floor}, pt {gameData.part}", True, (255, 255, 255))
+    if gameData.part == 0:
+        floor =  Data.title_font.render(f"Boss battle", True, (CO.BLACK[2]))
+    else:
+        floor =  Data.title_font.render(f"floor {gameData.floor}-{gameData.part}", True, (CO.BLACK[2]))
 
     while player.HP > 0 and enemies.current:
         clock.tick(30)
@@ -282,7 +278,7 @@ def play(player, enemies, gameData, screen):
     
     if not enemies.current:
         lvlUp(screen, player)
-        Won(screen)
+        # Won(screen)
         return "won"
     elif player.HP <= 0:
         # Dead(screen)

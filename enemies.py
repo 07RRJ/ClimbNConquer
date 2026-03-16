@@ -247,6 +247,7 @@ class Zombie:
 
         self.STR = 2 + int(2 * multi)
         self.ABILITIES = ["PASS", "BLOCK"]
+        self.MOVE = rng.choice(self.ABILITIES)
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
@@ -326,10 +327,11 @@ class RatKing:
         
         self.DEF = 0
         self.BLOCK = 1
-        
-        self.MOVE = rng.choice(self.ABILITIES)
+
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
+        self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
@@ -345,8 +347,9 @@ class RatKing:
         if enemyMove == "ATTACK":
             Attack(self.STR, player)
         self.MOVE += 1
-        if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = rng.choice(self.ABILITIES)
+        if self.MOVE_IDX > len(self.ABILITIES) - 1:
+            self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
 class RoyalBoar:
     TYPE = "Royal Boar"
@@ -364,9 +367,10 @@ class RoyalBoar:
         self.DEF = 0
         self.BLOCK = 10 + int(10 * multi)
         
-        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK", "ATTACK"]
+        self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
@@ -384,8 +388,9 @@ class RoyalBoar:
         if enemyMove == "BLOCK":
             self.DEF += self.BLOCK
         self.MOVE += 1
-        if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = rng.choice(self.ABILITIES)
+        if self.MOVE_IDX > len(self.ABILITIES) - 1:
+            self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
 class GoblinGeneral:
     TYPE = "Goblin General"
@@ -403,9 +408,10 @@ class GoblinGeneral:
         self.DEF = 0
         self.BLOCK = 1
         
-        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
+        self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
@@ -417,12 +423,12 @@ class GoblinGeneral:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = self.ABILITIES[self.MOVE]
         if enemyMove == "ATTACK":
             Attack(self.STR, player)
         self.MOVE += 1
-        if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = rng.choice(self.ABILITIES)
+        if self.MOVE_IDX > len(self.ABILITIES) - 1:
+            self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
 class Lich:
     TYPE = "Lich"
@@ -440,9 +446,10 @@ class Lich:
         self.DEF = 0
         self.BLOCK = 1
         
-        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
+        self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
