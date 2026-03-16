@@ -3,6 +3,17 @@
 # variable = getwch()
 # print(variable)
 
+# buttonPos = (
+#         [(100 + 100 * i, 100)for i in range(3)],
+#         [(300 + 100 * i, 100)for i in range(3)],
+#         [(500 + 100 * i, 100)for i in range(3)],
+#     )
+
+# print(buttonPos)
+
+# for i in range(9):
+#     print((i//3)%3, i%3)
+
 # n = 10
 # for lvl in range(100):
 #     print(lvl, n)

@@ -9,8 +9,8 @@ from saveAndLoad import Defult, Save, Load
 from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
-from gameData import KeyBinds as KB
-import keyboard
+# from gameData import KeyBinds as KB
+# import keyboard
 
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
@@ -19,28 +19,36 @@ def lvlUp(screen, player):
     selectedIdx = None
 
     labels = (
-        ("Max HP", "MAX_HP", 2),
-        ("Strength", "STR", 1),
-        ("Max Stamina", "MAX_STAMINA", 1),
-        ("Start Stamina", "BASE_STAMINA", 0.2),
-        ("Heal", "HEAL", 1),
-        ("Block", "BLOCK", 2),
-        ("Stamina Regen", "STAMINA_REGEN", 0.2),
-        ("Max Mana", "MAX_MANA", 1),
-        ("Start Mana", "MANA", 1),
+        (
+            ("Max HP", "MAX_HP", 2),
+            ("Strength", "STR", 1),
+            ("Max Stamina", "MAX_STAMINA", 1)
+        ),
+        (
+            ("Start Stamina", "BASE_STAMINA", 0.2),
+            ("Heal", "HEAL", 1),
+            ("Block", "BLOCK", 2)
+        ),
+        (
+            ("Stamina Regen", "STAMINA_REGEN", 0.2),
+            ("Max Mana", "MAX_MANA", 1),
+            ("Start Mana", "MANA", 1)
+        )
     )
-    buttonPos = [
-        [(100 + 100 * _, 100)for _ in range(3)],
-        [(300 + 100 * _, 100)for _ in range(3)],
-        [(500 + 100 * _, 100)for _ in range(3)],
-    ]
+    buttonPos = (
+        [(BASE_WIDTH//10+BASE_WIDTH//3*i, BASE_HEIGHT//5)for i in range(3)],
+        [(BASE_WIDTH//10+BASE_WIDTH//3*i, BASE_HEIGHT//2)for i in range(3)],
+        [(BASE_WIDTH//10+BASE_WIDTH//3*i, BASE_HEIGHT//5*4)for i in range(3)],
+    )
 
     buttons = []
 
-    for idx, label in enumerate(labels, 1):
-        text, attr, increse = label
-        label = f"{text} {getattr(player, attr)} + {increse}"
-        buttons.append(Button(label, pygame.Rect(100 + 100 * idx, BASE_HEIGHT - 100 - BASE_HEIGHT // 3 * (1 + idx % 3), 200, 60), CO.RED[2]))
+    for rowIdx, row in enumerate(labels):
+        for idx, label in enumerate(row):
+            text, attr, increse = label
+            x, y = buttonPos[rowIdx][idx]
+            label = f"{text} {getattr(player, attr)} + {increse}"
+            buttons.append(Button(label, pygame.Rect(x, y, 200, 60), CO.RED[2]))
     buttons.append(create_back_button())
 
     while player.EXP >= player.NEXT_LVL:
@@ -77,17 +85,17 @@ def lvlUp(screen, player):
                     return "quit"
 
                 elif selectedIdx != None:
-                    label, attr_name, increse = labels[selectedIdx]
+                    label, attr_name, increse = labels[(selectedIdx//3)%3][selectedIdx%3]
                     current = getattr(player, attr_name)
                     setattr(player, attr_name, current + increse)
                     player.EXP -= player.NEXT_LVL
                     player.LVL += 1
                     player.NEXT_LVL += player.LVL
 
-                    text, attr, increse = labels[selectedIdx]
-                    label = f"{text} {getattr(player, attr)} + {increse}"
-                    buttons[selectedIdx].text = label
-                    buttons[selectedIdx].__post_init__()
+                    # text, attr, increse = labels[selectedIdx]
+                    # label = f"{text} {getattr(player, attr)} + {increse}"
+                    # buttons[selectedIdx].text = label
+                    # buttons[selectedIdx].__post_init__()
 
 
         pygame.display.flip()
@@ -132,7 +140,7 @@ def play(player, enemies, gameData, screen):
 
     dmgText = []
 
-    displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
+    displayDef =  Data.text_font.render(f"{player.DEF}", True, (CO.BLUE[2]))
     floor =  Data.title_font.render(f"floor {gameData.floor}, pt {gameData.part}", True, (255, 255, 255))
 
     while player.HP > 0 and enemies.current:
@@ -169,51 +177,57 @@ def play(player, enemies, gameData, screen):
                 pygame.quit()
                 sys.exit()
 
-            elif event.type == pygame.MOUSEMOTION:
-                pos = pygame.mouse.get_pos()
-                isHovering = False
-                for idx, btn in enumerate(buttons):
-                    if btn.rect.collidepoint(pos):
-                        selectedIdx = idx
-                        isHovering = True
-                    elif isHovering == False:
-                        selectedIdx = None
-                for idx, enemy in enumerate(enemies.current):
-                    if enemy.rect.collidepoint(pos):
-                        selectedEnemyIdx = idx
-                        isHovering = True
-                    elif isHovering == False:
-                        selectedEnemyIdx = None
+            pos = pygame.mouse.get_pos()
+            isHovering = False
+            for idx, btn in enumerate(buttons):
+                if btn.rect.collidepoint(pos):
+                    selectedIdx = idx
+                    isHovering = True
+                elif isHovering == False:
+                    selectedIdx = None
+            isHoveringEnemy = False
+            for idx, enemy in enumerate(enemies.current):
+                if enemy.rect.collidepoint(pos):
+                    selectedEnemyIdx = idx
+                    isHoveringEnemy = True
+                elif isHoveringEnemy == False:
+                    selectedEnemyIdx = None
 
-            elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
-                pos = pygame.mouse.get_pos()
-                for idx, btn in enumerate(buttons):
-                    if btn.is_clicked(pos):
-                        selectedIdx = idx
-                        break
-                for idx, enemy in enumerate(enemies.current):
-                    if enemy.rect.collidepoint(pos):
-                        selectedEnemyIdx = idx
-                if selectedIdx == len(buttons) - 1 or keyboard.is_pressed(KB.quit):
-                    print("quit")
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
+                # pos = pygame.mouse.get_pos()
+                # for idx, btn in enumerate(buttons):
+                #     if btn.is_clicked(pos):
+                #         selectedIdx = idx
+                #         break
+                # for idx, enemy in enumerate(enemies.current):
+                #     if enemy.rect.collidepoint(pos):
+                #         selectedEnemyIdx = idx
+
+                if event.type == pygame.KEYDOWN:
+                    keys = pygame.key.get_pressed()
+                    for kb in gameData.keyBinds.values():
+                        if keys[kb[0]]:
+                            selectedIdx = kb[1]
+
+                if selectedIdx == len(buttons) - 1 or selectedIdx == "quit":
                     return "quit"
 
-                elif playerTurn:
-                    if selectedIdx == 0 or keyboard.is_pressed(KB.attack):
-                        playerTurn = "Attack"
-                        lastPlayerTurn = "Attack"
+                # elif playerTurn == True:
+                elif selectedIdx == 0:
+                    playerTurn = "Attack"
+                    lastPlayerTurn = "Attack"
 
-                    elif selectedIdx == 1 or keyboard.is_pressed(KB.heal):
-                        player.Heal()
-                        playerTurn = False
+                elif selectedIdx == 1:
+                    player.Heal()
+                    playerTurn = False
 
-                    elif selectedIdx == 2 or keyboard.is_pressed(KB.block):
-                        player.Block()
-                        playerTurn = False
+                elif selectedIdx == 2:
+                    player.Block()
+                    playerTurn = False
 
-                    elif selectedIdx == 3 or keyboard.is_pressed(KB.rest):
-                        player.Rest()
-                        playerTurn = False
+                elif selectedIdx == 3:
+                    player.Rest()
+                    playerTurn = False
 
                     # elif selectedIdx == 4:
                     #     playerTurn = False
@@ -235,49 +249,58 @@ def play(player, enemies, gameData, screen):
                     #     playerTurn = False
                     #     pass
 
-                    elif playerTurn == "Attack" or lastPlayerTurn == "Attack":
-                        if selectedEnemyIdx != None:
-                            try:
-                                player.Attack(gameData, enemies, selectedEnemyIdx)
-                                dmgText.append(DamageText(f"-{player.STR}", pos))
-                                playerTurn = False
-                            except Exception as e:
-                                print(e)
+                if playerTurn != False and lastPlayerTurn == "Attack":
+                    if selectedEnemyIdx != None:
+                        try:
+                            player.Attack(gameData, enemies, selectedEnemyIdx)
+                            dmgText.append(DamageText(f"-{player.STR}", pos))
+                            playerTurn = False
+                        except Exception as e:
+                            print(e)
 
-                    elif playerTurn == "Aoe" or lastPlayerTurn == "Aoe":
-                        if selectedEnemyIdx != None:
-                            try:
-                                player.Attack(gameData, enemies, selectedEnemyIdx)
-                                dmgText.append(DamageText(f"-{player.STR}", pos))
-                                playerTurn = False
-                            except Exception as e:
-                                print(e)
+                elif playerTurn == "Aoe" or lastPlayerTurn == "Aoe":
+                    if selectedEnemyIdx != None:
+                        try:
+                            player.Attack(gameData, enemies, selectedEnemyIdx)
+                            dmgText.append(DamageText(f"-{player.STR}", pos))
+                            playerTurn = False
+                        except Exception as e:
+                            print(e)
         if not playerTurn:
+            for enemy in enemies.current:
+                enemy.Move(player, enemies, gameData)
+            displayDef =  Data.text_font.render(f"{player.DEF}", True, (CO.BLUE[2]))
             player.STAMINA += player.STAMINA_REGEN
             if player.STAMINA >= player.MAX_STAMINA:
                 player.STAMINA = player.MAX_STAMINA
             player.DEF -= player.DEF // 2 + 1
             if player.DEF < 0:
                 player.DEF = 0
-            for enemy in enemies.current:
-                enemy.Move(player, enemies, gameData)
-            displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
             playerTurn = True
 
         pygame.display.flip()
     
     if not enemies.current:
         lvlUp(screen, player)
+        Won(screen)
         return "won"
     elif player.HP <= 0:
+        # Dead(screen)
         return "dead"
 
-def Won():
-    pass
+def Won(screen):
+    while True:
+        clock.tick(30)
+        screen.fill(CO.GREEN[2])
 
-def Dead():
-    pass
+        pygame.display.flip()
+
+def Dead(screen):
+    while True:
+        clock.tick(30)
+        screen.fill(CO.RED[2])
     # death in endless should be separate
+        pygame.display.flip()
 
 def GameManager(file, screen):
     runing = True
@@ -295,7 +318,6 @@ def GameManager(file, screen):
         if result == "quit":
             return
         if result == "dead":
-            Dead()
             return
         elif gameData.part == 5:
             enemies.difficultyUp(gameData)

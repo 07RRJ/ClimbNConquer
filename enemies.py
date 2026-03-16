@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 # from uiData import Mobs
 import uiElements
 from uiData import Colours as CO
+from uiData import Data
 
 @dataclass
 class Enemies:
@@ -76,6 +77,17 @@ class Enemies:
 
         uiElements.Bar(CO.BLACK[1], x, y+200, 200, 24, None).draw(screen)
         uiElements.Bar(CO.GREEN[3], x+2, y+202, 196, 20, (enemy, "HP", "MAX_HP")).draw(screen)
+
+        if enemy.MOVE == "PASS":
+            displayIntent =  Data.text_font.render(f"{enemy.Move}", True, (CO.BLACK[5]))
+        elif enemy.MOVE == "ATTACK":
+            displayIntent =  Data.text_font.render(f"Attacking: ({enemy.STR})", True, (CO.RED[2]))
+        elif enemy.MOVE == "BLOCK":
+            displayIntent =  Data.text_font.render(f"Block: ({enemy.BLOCK})", True, (CO.BLUE[2]))
+
+        displayDef =  Data.text_font.render(f"{enemy.DEF}", True, (CO.BLUE[2]))
+        screen.blit(displayDef, (x, y + 230))
+        screen.blit(displayIntent, (x, y))
 
 # ======================================
 # SECTION: ENEMIES
@@ -197,6 +209,7 @@ class Goblin:
     
         self.STR = 1 + int(1 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
+        self.MOVE = rng.choice(self.ABILITIES)
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
@@ -208,13 +221,13 @@ class Goblin:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = rng.choice(self.ABILITIES)
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
-        elif enemyMove == "BLOCK":
+        elif self.MOVE == "BLOCK":
             for enemy in enemies.current:
                 if enemy.TYPE == "GOBLIN":
                     self.DEF += self.BLOCK
+        self.MOVE = rng.choice(self.ABILITIES)
 
 class Zombie:
     TYPE = "Zombie"
@@ -245,13 +258,13 @@ class Zombie:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = rng.choice(self.ABILITIES)
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             amountOfZombies = 0
             for enemy in enemies.current:
                 if enemy.TYPE == "ZOMBIE":
                     amountOfZombies += 1
             Attack(self.STR + amountOfZombies, player)
+        self.MOVE = rng.choice(self.ABILITIES)
 
 # ======================================
 # SECTION: BOSSES
@@ -274,8 +287,9 @@ class KingSlime:
         self.BLOCK = 5 + int(10 * multi)
         
         self.STR = 1
-        self.MOVE = 0
         self.ABILITIES = ["SUMMON", "BLOCK", "PASS", "PASS"]
+        self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
@@ -287,15 +301,15 @@ class KingSlime:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = self.ABILITIES[self.MOVE]
-        if enemyMove == "BLOCK":
+        if self.MOVE == "BLOCK":
             self.DEF += self.BLOCK
-        if enemyMove == "SUMMON":
+        if self.MOVE == "SUMMON":
             slime = Slime(gameData, True)
             enemies.current.append(slime)
-        self.MOVE += 1
-        if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = 0
+        self.MOVE_IDX += 1
+        if self.MOVE_IDX > len(self.ABILITIES) - 1:
+            self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
 class RatKing:
     TYPE = "Rat King"
@@ -313,7 +327,7 @@ class RatKing:
         self.DEF = 0
         self.BLOCK = 1
         
-        self.MOVE = 0
+        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
 
@@ -332,7 +346,7 @@ class RatKing:
             Attack(self.STR, player)
         self.MOVE += 1
         if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = 0
+            self.MOVE = rng.choice(self.ABILITIES)
 
 class RoyalBoar:
     TYPE = "Royal Boar"
@@ -350,7 +364,7 @@ class RoyalBoar:
         self.DEF = 0
         self.BLOCK = 10 + int(10 * multi)
         
-        self.MOVE = 0
+        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK", "ATTACK"]
 
@@ -371,7 +385,7 @@ class RoyalBoar:
             self.DEF += self.BLOCK
         self.MOVE += 1
         if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = 0
+            self.MOVE = rng.choice(self.ABILITIES)
 
 class GoblinGeneral:
     TYPE = "Goblin General"
@@ -389,7 +403,7 @@ class GoblinGeneral:
         self.DEF = 0
         self.BLOCK = 1
         
-        self.MOVE = 0
+        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
 
@@ -408,7 +422,7 @@ class GoblinGeneral:
             Attack(self.STR, player)
         self.MOVE += 1
         if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = 0
+            self.MOVE = rng.choice(self.ABILITIES)
 
 class Lich:
     TYPE = "Lich"
@@ -426,7 +440,7 @@ class Lich:
         self.DEF = 0
         self.BLOCK = 1
         
-        self.MOVE = 0
+        self.MOVE = rng.choice(self.ABILITIES)
         self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
 
@@ -445,4 +459,4 @@ class Lich:
             Attack(self.STR, player)
         self.MOVE += 1
         if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = 0
+            self.MOVE = rng.choice(self.ABILITIES)
