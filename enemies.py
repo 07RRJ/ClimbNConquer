@@ -74,8 +74,8 @@ class Enemies:
         else:
             screen.blit(enemy.IMG, (x, y))
 
-        uiElements.Bar(CO.BLACK[1], x, y+200, 200, 20, None).draw(screen)
-        uiElements.Bar(CO.GREEN[3], x+2, y+202, 196, 16, (enemy, "HP", "MAX_HP")).draw(screen)
+        uiElements.Bar(CO.BLACK[1], x, y+200, 200, 24, None).draw(screen)
+        uiElements.Bar(CO.GREEN[3], x+2, y+202, 196, 20, (enemy, "HP", "MAX_HP")).draw(screen)
 
 # ======================================
 # SECTION: ENEMIES

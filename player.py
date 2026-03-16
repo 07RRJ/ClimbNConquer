@@ -1,5 +1,8 @@
 # from gameFuncs import Attack
 from dataclasses import dataclass, field
+import pygame, keyboard
+from gameData import KeyBinds as KB
+import uiElements
 
 @dataclass
 class Player:
@@ -25,7 +28,7 @@ class Player:
     EXP: int = 0
     NEXT_LVL: int = 5
     LVL: int = 0
-    ABILITIES: list [str] = field(default_factory=lambda: [["ATTACK", 1, True], ["AOE", 3, "King Slime"], ["MULTI SLAM", 5, "Rat King"], ["HEAL", 1, True], ["BLOCK", 1, True], ["REST", 0, True]])
+    # ABILITIES: list [str] = field(default_factory=lambda: [["ATTACK", 1, True], ["AOE", 3, "King Slime"], ["MULTI SLAM", 5, "Rat King"], ["HEAL", 1, True], ["BLOCK", 1, True], ["REST", 0, True]])
 
     def listStats(self):
         stats = [
@@ -50,7 +53,6 @@ class Player:
         enemies.killed(self, gameData)
 
     def Heal(self):
-        # if self.HP < self.MAX_HP:
         self.HP += self.HEAL
         if self.HP > self.MAX_HP:
             self.HP = self.MAX_HP
@@ -59,8 +61,7 @@ class Player:
         self.DEF += self.BLOCK
 
     def Rest(self):
-        if self.STAMINA < self.MAX_STAMINA:
-            self.STAMINA += self.STAMINA_REGEN
+        self.STAMINA += self.STAMINA_REGEN
         if self.STAMINA > self.MAX_STAMINA:
             self.STAMINA = self.MAX_STAMINA
 
@@ -119,26 +120,3 @@ class Player:
     #     self.STAMINA += 1
     #     if self.STAMINA > self.MAX_STAMINA:
     #         self.STAMINA = self.MAX_STAMINA
-
-    def ExpUp(self):
-        while self.EXP >= self.NEXT_LVL:
-            self.EXP -= self.NEXT_LVL
-            self.LVL += 1
-            self.NEXT_LVL += self.LVL
-            while True:
-                lvlUpList = [
-                    ("Max HP", "MAX_HP", 2),
-                    ("Heal", "HEAL", 1),
-                    ("Block", "BLOCK", 2),
-                    ("Strength", "STR", 1),
-                    ("Max Stamina", "MAX_STAMINA", 1),
-                    ("Start Stamina", "BASE_STAMINA", 0.2),
-                    ("Stamina Regen", "STAMINA_REGEN", 0.2),
-                    ("Max Mana", "MAX_MANA", 1),
-                    ("Start Mana", "MANA", 1),
-                ]
-                for idx, (label, attrName, increse) in enumerate(lvlUpList, 1):
-                    current = getattr(self, attrName)
-            label, attr_name, increse = lvlUpList[choice]
-            current = getattr(self, attr_name)
-            setattr(self, attr_name, current + increse)

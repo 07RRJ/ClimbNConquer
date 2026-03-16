@@ -14,6 +14,14 @@ class GameData:
         "King Slime": 0, "Rat King": 0, "Royal Boar": 0, "Goblin General": 0, "Lich": 0
     })
 
-# @dataclass
-# class KeyBinds:
-#     attack: 
+class KeyBinds:
+    quit = "esc"
+    attack = "1"
+    heal = "2"
+    block = "3"
+    rest = "4"
+    aoe = "5"
+    regen = "6"
+    fortress = "7"
+    meditate = "8"
+    nuke = "9"

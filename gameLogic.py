@@ -9,6 +9,8 @@ from saveAndLoad import Defult, Save, Load
 from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
+from gameData import KeyBinds as KB
+import keyboard
 
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
@@ -27,12 +29,18 @@ def lvlUp(screen, player):
         ("Max Mana", "MAX_MANA", 1),
         ("Start Mana", "MANA", 1),
     )
+    buttonPos = [
+        [(100 + 100 * _, 100)for _ in range(3)],
+        [(300 + 100 * _, 100)for _ in range(3)],
+        [(500 + 100 * _, 100)for _ in range(3)],
+    ]
+
     buttons = []
 
     for idx, label in enumerate(labels, 1):
         text, attr, increse = label
         label = f"{text} {getattr(player, attr)} + {increse}"
-        buttons.append(Button(label, pygame.Rect(100 + 100 * idx, BASE_HEIGHT - 100 - BASE_HEIGHT // 3 * (1 + idx % 3), 100, 30), CO.RED[2]))
+        buttons.append(Button(label, pygame.Rect(100 + 100 * idx, BASE_HEIGHT - 100 - BASE_HEIGHT // 3 * (1 + idx % 3), 200, 60), CO.RED[2]))
     buttons.append(create_back_button())
 
     while player.EXP >= player.NEXT_LVL:
@@ -69,7 +77,6 @@ def lvlUp(screen, player):
                     return "quit"
 
                 elif selectedIdx != None:
-                    print(labels[selectedIdx])
                     label, attr_name, increse = labels[selectedIdx]
                     current = getattr(player, attr_name)
                     setattr(player, attr_name, current + increse)
@@ -92,6 +99,9 @@ def play(player, enemies, gameData, screen):
     selectedIdx = None
     selectedEnemyIdx = None
     
+    player.DEF = 0
+    player.STAMINA = player.BASE_STAMINA
+
     bg = pygame.image.load(ResourcePath("assets/img/ability_menu.png")).convert_alpha()
     bg = pygame.transform.scale(bg, (BASE_WIDTH, BASE_HEIGHT))
     block = pygame.image.load(ResourcePath("assets/img/block.png")).convert_alpha()
@@ -123,6 +133,7 @@ def play(player, enemies, gameData, screen):
     dmgText = []
 
     displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
+    floor =  Data.title_font.render(f"floor {gameData.floor}, pt {gameData.part}", True, (255, 255, 255))
 
     while player.HP > 0 and enemies.current:
         clock.tick(30)
@@ -131,6 +142,7 @@ def play(player, enemies, gameData, screen):
         screen.blit(block, (350, 30))
 
         screen.blit(displayDef, displayDef.get_rect(center=(389, 69)))
+        screen.blit(floor, (200, 200))
 
         for idx, btn in enumerate(buttons):
             isSelected = (idx == selectedIdx)
@@ -173,7 +185,7 @@ def play(player, enemies, gameData, screen):
                     elif isHovering == False:
                         selectedEnemyIdx = None
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
                 pos = pygame.mouse.get_pos()
                 for idx, btn in enumerate(buttons):
                     if btn.is_clicked(pos):
@@ -182,35 +194,46 @@ def play(player, enemies, gameData, screen):
                 for idx, enemy in enumerate(enemies.current):
                     if enemy.rect.collidepoint(pos):
                         selectedEnemyIdx = idx
-            
-                if selectedIdx == len(buttons) - 1:
+                if selectedIdx == len(buttons) - 1 or keyboard.is_pressed(KB.quit):
+                    print("quit")
                     return "quit"
 
                 elif playerTurn:
-                    if selectedIdx == 0:
+                    if selectedIdx == 0 or keyboard.is_pressed(KB.attack):
                         playerTurn = "Attack"
                         lastPlayerTurn = "Attack"
 
-                    elif selectedIdx == 1:
+                    elif selectedIdx == 1 or keyboard.is_pressed(KB.heal):
                         player.Heal()
                         playerTurn = False
 
-                    elif selectedIdx == 2:
+                    elif selectedIdx == 2 or keyboard.is_pressed(KB.block):
                         player.Block()
                         playerTurn = False
-                        displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
 
-                    elif selectedIdx == 3:
+                    elif selectedIdx == 3 or keyboard.is_pressed(KB.rest):
                         player.Rest()
                         playerTurn = False
 
-                    elif selectedIdx == 4:
-                        playerTurn = False
-                        pass
+                    # elif selectedIdx == 4:
+                    #     playerTurn = False
+                    #     pass
 
-                    elif selectedIdx == 5:
-                        playerTurn = False
-                        pass
+                    # elif selectedIdx == 5:
+                    #     playerTurn = False
+                    #     pass
+
+                    # elif selectedIdx == 5:
+                    #     playerTurn = False
+                    #     pass
+
+                    # elif selectedIdx == 5:
+                    #     playerTurn = False
+                    #     pass
+
+                    # elif selectedIdx == 5:
+                    #     playerTurn = False
+                    #     pass
 
                     elif playerTurn == "Attack" or lastPlayerTurn == "Attack":
                         if selectedEnemyIdx != None:
@@ -221,7 +244,21 @@ def play(player, enemies, gameData, screen):
                             except Exception as e:
                                 print(e)
 
+                    elif playerTurn == "Aoe" or lastPlayerTurn == "Aoe":
+                        if selectedEnemyIdx != None:
+                            try:
+                                player.Attack(gameData, enemies, selectedEnemyIdx)
+                                dmgText.append(DamageText(f"-{player.STR}", pos))
+                                playerTurn = False
+                            except Exception as e:
+                                print(e)
         if not playerTurn:
+            player.STAMINA += player.STAMINA_REGEN
+            if player.STAMINA >= player.MAX_STAMINA:
+                player.STAMINA = player.MAX_STAMINA
+            player.DEF -= player.DEF // 2 + 1
+            if player.DEF < 0:
+                player.DEF = 0
             for enemy in enemies.current:
                 enemy.Move(player, enemies, gameData)
             displayDef =  Data.text_font.render(f"{player.DEF}", True, (255, 255, 255))
