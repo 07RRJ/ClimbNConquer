@@ -76,7 +76,7 @@ class Bar:
             pygame.draw.rect(screen, self.colour, rect)
 
 class DamageText:
-    def __init__(self, text, pos, duration=2.0):
+    def __init__(self, text, pos, duration=1):
         self.x = pos[0]
         self.y = pos[1]
         self.start_time = time.time()

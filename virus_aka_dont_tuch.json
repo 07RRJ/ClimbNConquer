@@ -1,9 +1,9 @@
 {
     "player": {
         "MAX_HP": 20,
-        "HP": 11,
+        "HP": 20,
         "HEAL": 3,
-        "DEF": 8,
+        "DEF": 7,
         "BLOCK": 25,
         "STR": 4,
         "AOE": 0,
@@ -14,7 +14,7 @@
         "MAX_STAMINA": 5,
         "MAX_MANA": 5,
         "MANA": 0,
-        "EXP": 42,
+        "EXP": 72,
         "NEXT_LVL": 110,
         "LVL": 14
     },
@@ -49,10 +49,10 @@
         "turn": 0,
         "endless": false,
         "enemiesKilled": {
-            "Slime": 41,
+            "Slime": 43,
             "Rat": 30,
-            "Boar": 18,
-            "Goblin": 8,
+            "Boar": 20,
+            "Goblin": 9,
             "Zombie": 6,
             "King Slime": 1,
             "Rat King": 1,

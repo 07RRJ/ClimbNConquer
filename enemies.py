@@ -79,11 +79,13 @@ class Enemies:
         uiElements.Bar(CO.GREEN[3], x+2, y+202, 196, 20, (enemy, "HP", "MAX_HP")).draw(screen)
 
         if enemy.MOVE == "PASS":
-            displayIntent =  Data.text_font.render(f"{enemy.Move}", True, (CO.BLACK[5]))
+            displayIntent =  Data.text_font.render("Passing", True, (CO.BLACK[5]))
         elif enemy.MOVE == "ATTACK":
             displayIntent =  Data.text_font.render(f"Attacking: ({enemy.STR})", True, (CO.RED[2]))
         elif enemy.MOVE == "BLOCK":
             displayIntent =  Data.text_font.render(f"Block: ({enemy.BLOCK})", True, (CO.BLUE[2]))
+        elif enemy.MOVE == "SUMMON":
+            displayIntent =  Data.text_font.render(f"Summoning", True, (CO.BLUE[2]))
 
         displayDef =  Data.text_font.render(f"{enemy.DEF}", True, (CO.BLUE[2]))
         screen.blit(displayDef, (x, y + 230))
@@ -343,10 +345,10 @@ class RatKing:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = self.ABILITIES[self.MOVE]
-        if enemyMove == "ATTACK":
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
-        self.MOVE += 1
+        self.MOVE_IDX += 1
         if self.MOVE_IDX > len(self.ABILITIES) - 1:
             self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
@@ -382,12 +384,11 @@ class RoyalBoar:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = self.ABILITIES[self.MOVE]
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
-        if enemyMove == "BLOCK":
+        if self.MOVE == "BLOCK":
             self.DEF += self.BLOCK
-        self.MOVE += 1
+        self.MOVE_IDX += 1
         if self.MOVE_IDX > len(self.ABILITIES) - 1:
             self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
@@ -423,9 +424,9 @@ class GoblinGeneral:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
-        self.MOVE += 1
+        self.MOVE_IDX += 1
         if self.MOVE_IDX > len(self.ABILITIES) - 1:
             self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
@@ -461,9 +462,9 @@ class Lich:
         self.DEF -= self.DEF // 2 + 1
         if self.DEF < 0:
             self.DEF = 0
-        enemyMove = self.ABILITIES[self.MOVE]
-        if enemyMove == "ATTACK":
+        if self.MOVE == "ATTACK":
             Attack(self.STR, player)
-        self.MOVE += 1
-        if self.MOVE > len(self.ABILITIES) - 1:
-            self.MOVE = rng.choice(self.ABILITIES)
+        self.MOVE_IDX += 1
+        if self.MOVE_IDX > len(self.ABILITIES) - 1:
+            self.MOVE_IDX = 0
+        self.MOVE = self.ABILITIES[self.MOVE_IDX]

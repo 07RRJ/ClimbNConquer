@@ -9,6 +9,7 @@ from saveAndLoad import Defult, Save, Load
 from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
+from time import sleep
 # from gameData import KeyBinds as KB
 # import keyboard
 
@@ -257,12 +258,28 @@ def play(player, enemies, gameData, screen):
                 elif playerTurn == "Aoe" or lastPlayerTurn == "Aoe":
                     if selectedEnemyIdx != None:
                         try:
-                            player.Attack(gameData, enemies, selectedEnemyIdx)
-                            dmgText.append(DamageText(f"-{player.STR}", pos))
-                            playerTurn = False
+                            # player.Attack(gameData, enemies, selectedEnemyIdx)
+                            # dmgText.append(DamageText(f"-{player.STR}", pos))
+                            # playerTurn = False
+                            # player.STAMINA -= move[1]
+                            # enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
+                            listToAttack = [[selectedEnemyIdx, 1]]
+                            for i in range(player.AOE):
+                                i += 1
+                                listToAttack.append([selectedEnemyIdx + i, (i + 1) / 1.5])
+                                listToAttack.append([selectedEnemyIdx - i, (i + 1) / 1.5])
+                            for attack in listToAttack:
+                                if attack[0] >= 0:
+                                    if attack[0] <= len(enemies.current):
+                                        try:
+                                            player.Attack(int(player.STR / attack[1]), enemies.current[attack[0]])
+                                        except:
+                                            pass
+                            enemies.killed()
                         except Exception as e:
                             print(e)
         if not playerTurn:
+            pygame.display.flip()
             for enemy in enemies.current:
                 enemy.Move(player, enemies, gameData)
             displayDef =  Data.text_font.render(f"{player.DEF}", True, (CO.BLUE[2]))
@@ -275,7 +292,7 @@ def play(player, enemies, gameData, screen):
             playerTurn = True
 
         pygame.display.flip()
-    
+
     if not enemies.current:
         lvlUp(screen, player)
         # Won(screen)
