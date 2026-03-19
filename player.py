@@ -8,6 +8,8 @@ class Player:
     MAX_HP: int = 20
     HP: int = MAX_HP
     HEAL: int = 3
+    REGEN: int = 3
+    ACTIVE_REGEN: int = 0
 
     DEF: int = 0
     BLOCK: int = 3
@@ -64,58 +66,14 @@ class Player:
         if self.STAMINA > self.MAX_STAMINA:
             self.STAMINA = self.MAX_STAMINA
 
-    # def Move(self, gameData, enemies):
-    #     self.DEF -= self.DEF // 2 + 1
-    #     if self.DEF < 0:
-    #         self.DEF = 0
-    #     self.listStats()
-    #     possibleMoves = []
-    #     moveIdx = 1
-    #     for move in self.ABILITIES:
-    #         if move[1] <= self.STAMINA:
-    #             if move[2] == True or gameData.enemiesKilled[move[2]] != 0:
-    #                 possibleMoves.append(move)
-    #                 moveIdx += 1
-    #     # move = possibleMoves[Limit("your move: ", 0, len(possibleMoves) + 1) - 1]
-    #     if move[0] == "ATTACK":
-    #         self.STAMINA -= move[1]
-    #         # enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
-    #         # Attack(self.STR, enemies.current[enemyToAttack])
-    #         enemies.killed(self, gameData)
-    #     elif move[0] == "AOE":
-    #         self.STAMINA -= move[1]
-    #         # enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
-    #         # listToAttack = [[enemyToAttack, 1]]
-    #         for i in range(self.AOE):
-    #             i += 1
-    #             # listToAttack.append([enemyToAttack + i, (i + 1) / 1.5])
-    #             # listToAttack.append([enemyToAttack - i, (i + 1) / 1.5])
-    #         # for attack in listToAttack:
-    #         #     if attack[0] >= 0:
-    #         #         if attack[0] <= len(enemies.current):
-    #         #             try:
-    #         #                 Attack(int(self.STR / attack[1]), enemies.current[attack[0]])
-    #         #             except:
-    #         #                 pass
-    #         enemies.killed()
-    #     elif move[0] == "MULTI SLAM":
-    #         # enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
-    #         for attack in range(self.MULTI_ATTACK):
-    #             pass
-    #             # Attack(max(int(self.STR // 2 * (attack + 2)), 1), enemies.current[enemyToAttack])
-    #         enemies.killed()
-    #     elif move[0] == "HEAL":
-    #         self.STAMINA -= move[1]
-    #         if self.HP != self.MAX_HP and self.HP + self.HEAL < self.MAX_HP:
-    #             self.HP += self.HEAL
-    #         else:
-    #             self.HP = self.MAX_HP
-    #     elif move[0] == "BLOCK":
-    #         self.STAMINA -= move[1]
-    #         self.DEF += self.BLOCK
-    #     elif move[0] == "REST":
-    #         self.STAMINA -= move[1]
-    #         self.STAMINA += self.STAMINA_REGEN
-    #     self.STAMINA += 1
-    #     if self.STAMINA > self.MAX_STAMINA:
-    #         self.STAMINA = self.MAX_STAMINA
+    def Regen(self):
+        self.ACTIVE_REGEN += self.REGEN
+
+    def Fortress(self):
+        self.DEF += self.BLOCK
+
+    def Meditate(self):
+        pass
+
+    def StartOfTurn(self):
+        pass

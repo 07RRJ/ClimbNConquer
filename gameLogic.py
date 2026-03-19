@@ -2,16 +2,11 @@ from gameFuncs import ResourcePath
 import pygame
 from uiData import Colours as CO
 import os, sys
-# import random as rng
-# from gameFuncs import GetTime
-# from dataclasses import dataclass, asdict
 from saveAndLoad import Defult, Save, Load
 from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
 from time import sleep
-# from gameData import KeyBinds as KB
-# import keyboard
 
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
@@ -191,14 +186,7 @@ def play(player, enemies, gameData, screen):
                     selectedEnemyIdx = None
 
             if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
-                # pos = pygame.mouse.get_pos()
-                # for idx, btn in enumerate(buttons):
-                #     if btn.is_clicked(pos):
-                #         selectedIdx = idx
-                #         break
-                # for idx, enemy in enumerate(enemies.current):
-                #     if enemy.rect.collidepoint(pos):
-                #         selectedEnemyIdx = idx
+
 
                 if event.type == pygame.KEYDOWN:
                     keys = pygame.key.get_pressed()
@@ -226,25 +214,25 @@ def play(player, enemies, gameData, screen):
                     player.Rest()
                     playerTurn = False
 
-                    # elif selectedIdx == 4:
-                    #     playerTurn = False
-                    #     pass
+                elif selectedIdx == 4:
+                    playerTurn = "Aoe"
+                    lastPlayerTurn = "Aoe"
 
-                    # elif selectedIdx == 5:
-                    #     playerTurn = False
-                    #     pass
+                elif selectedIdx == 5:
+                    player.Regen()
+                    playerTurn = False
 
-                    # elif selectedIdx == 5:
-                    #     playerTurn = False
-                    #     pass
+                elif selectedIdx == 6:
+                    player.Fortress()
+                    playerTurn = False
 
-                    # elif selectedIdx == 5:
-                    #     playerTurn = False
-                    #     pass
+                elif selectedIdx == 7:
+                    player.Meditate()
+                    playerTurn = False
 
-                    # elif selectedIdx == 5:
-                    #     playerTurn = False
-                    #     pass
+                elif selectedIdx == 8:
+                    player.Nuke()
+                    playerTurn = False
 
                 if playerTurn != False and lastPlayerTurn == "Attack":
                     if selectedEnemyIdx != None:
@@ -258,11 +246,6 @@ def play(player, enemies, gameData, screen):
                 elif playerTurn == "Aoe" or lastPlayerTurn == "Aoe":
                     if selectedEnemyIdx != None:
                         try:
-                            # player.Attack(gameData, enemies, selectedEnemyIdx)
-                            # dmgText.append(DamageText(f"-{player.STR}", pos))
-                            # playerTurn = False
-                            # player.STAMINA -= move[1]
-                            # enemyToAttack = Limit(f"Enemy to attack (1 - {len(enemies.current)}): ", 0, len(enemies.current) + 1) - 1
                             listToAttack = [[selectedEnemyIdx, 1]]
                             for i in range(player.AOE):
                                 i += 1
@@ -302,6 +285,9 @@ def play(player, enemies, gameData, screen):
         return "dead"
 
 def Won(screen):
+    buttons = [
+        create_back_button()
+    ]
     while True:
         clock.tick(30)
         screen.fill(CO.GREEN[2])
@@ -309,9 +295,14 @@ def Won(screen):
         pygame.display.flip()
 
 def Dead(screen):
+    buttons = [
+        create_back_button()
+    ]
     while True:
         clock.tick(30)
         screen.fill(CO.RED[2])
+        for button in buttons:
+            button.draw()
     # death in endless should be separate
         pygame.display.flip()
 

@@ -2,7 +2,6 @@ import pygame
 import random as rng
 from gameFuncs import Attack, ResourcePath
 from dataclasses import dataclass, field
-# from uiData import Mobs
 import uiElements
 from uiData import Colours as CO
 from uiData import Data
@@ -61,14 +60,14 @@ class Enemies:
                     self.current.pop(idx)
 
     def difficultyUp(self, gameData):
-        self.amountEnemies[0] = self.amountEnemies[1]
-        self.amountEnemies[1] = self.amountEnemies[2]
-        self.amountEnemies[2] += 1
+        if self.amountEnemies[2] < 9:
+            self.amountEnemies[0] = self.amountEnemies[1]
+            self.amountEnemies[1] = self.amountEnemies[2]
+            self.amountEnemies[2] += 1
         self.possible.append(self.enemyTypes[(gameData.floor) % len(self.enemyTypes)])
 
     def Draw(self, screen, idx, x, y, selected):
         enemy = self.current[idx]
-        # print(self.current[idx].TYPE)
         enemy.rect = pygame.Rect(x, y, 200, 200)
         if selected:
             screen.blit(enemy.SELECTED_IMG, (x, y))
@@ -84,8 +83,10 @@ class Enemies:
             displayIntent =  Data.text_font.render(f"Attacking: ({enemy.STR})", True, (CO.RED[2]))
         elif enemy.MOVE == "BLOCK":
             displayIntent =  Data.text_font.render(f"Block: ({enemy.BLOCK})", True, (CO.BLUE[2]))
+        elif enemy.MOVE == "HEAL":
+            displayIntent =  Data.text_font.render(f"Heal: ({enemy.HEAL})", True, (CO.GREEN[2]))
         elif enemy.MOVE == "SUMMON":
-            displayIntent =  Data.text_font.render(f"Summoning", True, (CO.BLUE[2]))
+            displayIntent =  Data.text_font.render(f"Summoning", True, (CO.BLACK[5]))
 
         displayDef =  Data.text_font.render(f"{enemy.DEF}", True, (CO.BLUE[2]))
         screen.blit(displayDef, (x, y + 230))
