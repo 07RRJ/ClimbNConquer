@@ -1,5 +1,6 @@
-# from gameFuncs import Attack
+from gameFuncs import Attack
 from dataclasses import dataclass, field
+from uiElements import Button, Bar, DamageText
 # import pygame
 # import uiElements
 
@@ -13,13 +14,14 @@ class Player:
 
     DEF: int = 0
     BLOCK: int = 3
+    FORTRESS: int = 0
 
     STR: int = 1
     AOE: int = 0
     MULTI_ATTACK: int = 0
 
     BASE_STAMINA: float = 1
-    STAMINA: float = BASE_STAMINA
+    STAMINA: int = BASE_STAMINA
     STAMINA_REGEN: float = 1
     MAX_STAMINA: int = 5
 
@@ -29,36 +31,64 @@ class Player:
     EXP: int = 0
     NEXT_LVL: int = 5
     LVL: int = 0
-    # ABILITIES: list [str] = field(default_factory=lambda: [["ATTACK", 1, True], ["AOE", 3, "King Slime"], ["MULTI SLAM", 5, "Rat King"], ["HEAL", 1, True], ["BLOCK", 1, True], ["REST", 0, True]])
 
-    def listStats(self):
-        stats = [
-            f"HP: ({self.HP}/{self.MAX_HP})",
-            f", DEF ({self.DEF}/{self.BLOCK})",
-            f", STAMINA({self.STAMINA}/{self.MAX_STAMINA})",
-            f", LVL ({self.LVL})",
-            f", EXP ({self.EXP}/{self.NEXT_LVL})",
-            "\n",
-            f"STR: ({self.STR})",
-            f", HEAL ({self.HEAL})",
-            f", BLOCK ({self.BLOCK})",
-            f", REST ({self.STAMINA_REGEN})"
-        ]
+    # def listStats(self):
+    #     stats = [
+    #         f"HP: ({self.HP}/{self.MAX_HP})",
+    #         f", DEF ({self.DEF}/{self.BLOCK})",
+    #         f", STAMINA({self.STAMINA}/{self.MAX_STAMINA})",
+    #         f", LVL ({self.LVL})",
+    #         f", EXP ({self.EXP}/{self.NEXT_LVL})",
+    #         "\n",
+    #         f"STR: ({self.STR})",
+    #         f", HEAL ({self.HEAL})",
+    #         f", BLOCK ({self.BLOCK})",
+    #         f", REST ({self.STAMINA_REGEN})"
+    #     ]
 
-    def Attack(self, gameData, enemies, idx):
-        enemy = enemies.current[idx]
-        enemy.DEF -= self.STR
-        if enemy.DEF < 0:
-            enemy.HP += enemy.DEF
-            enemy.DEF = 0
+    def Attack(self, gameData, enemies, selectedEnemyIdx, pos):
+        self.STAMINA -= 1
+        playerTurn = True
+        theAttack = False
+        try:
+            Attack(self.STR, enemies.current[selectedEnemyIdx])
+            playerTurn = False
+            theAttack = DamageText(f"-{self.STR}", pos)
+        except Exception as e:
+            print(e)
         enemies.killed(self, gameData)
+        return playerTurn, theAttack
+    
+    def Aoe(self, gameData, enemies, selectedEnemyIdx, enemyPos):
+        
+        theAttacks = []
+        
+        try:
+            listToAttack = [[selectedEnemyIdx, 1]]
+            for i in range(self.AOE):
+                i += 1
+                listToAttack.append([selectedEnemyIdx + i, (i + 1) / 1.5])
+                listToAttack.append([selectedEnemyIdx - i, (i + 1) / 1.5])
+            for attack in listToAttack:
+                if attack[0] >= 0:
+                    if attack[0] <= len(enemies.current):
+                        try:
+                            Attack(gameData, int(self.STR / attack[1]), enemies.current[attack[0]])
+                            theAttacks.append(DamageText(f"-{int(self.STR / attack[1])}", pos))
+                        except:
+                            pass
+            enemies.killed()
+        except Exception as e:
+            print(e)
 
     def Heal(self):
+        self.STAMINA -= 1
         self.HP += self.HEAL
         if self.HP > self.MAX_HP:
             self.HP = self.MAX_HP
 
     def Block(self):
+        self.STAMINA -= 1
         self.DEF += self.BLOCK
 
     def Rest(self):
@@ -67,13 +97,16 @@ class Player:
             self.STAMINA = self.MAX_STAMINA
 
     def Regen(self):
+        self.STAMINA -= 3
         self.ACTIVE_REGEN += self.REGEN
 
     def Fortress(self):
-        self.DEF += self.BLOCK
+        self.STAMINA -= 3
+        self.DEF += self.DEF * self.FORTRESS
 
     def Meditate(self):
-        pass
+        self.HP -= self.Meditate
+        self.STAMINA += 3
 
     def StartOfTurn(self):
         pass

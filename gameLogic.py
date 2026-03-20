@@ -127,6 +127,13 @@ def play(player, enemies, gameData, screen):
         (Bar(CO.YELLOW[2], 32, 78, 300, 30, (player, "STAMINA", "MAX_STAMINA")))
     ]
 
+    enemyPos = []
+    for i in range(9):
+        if i % 2 == 0:
+            enemyPos.append(i, BASE_WIDTH-230-120*i, 100)
+        elif i % 2 == 1:
+            enemyPos.append(i, BASE_WIDTH-230-120*i, 320)
+
     dmgText = []
 
     displayDef =  Data.text_font.render(f"{player.DEF}", True, (CO.BLUE[2]))
@@ -234,33 +241,17 @@ def play(player, enemies, gameData, screen):
                     player.Nuke()
                     playerTurn = False
 
-                if playerTurn != False and lastPlayerTurn == "Attack":
-                    if selectedEnemyIdx != None:
-                        try:
-                            player.Attack(gameData, enemies, selectedEnemyIdx)
-                            dmgText.append(DamageText(f"-{player.STR}", pos))
-                            playerTurn = False
-                        except Exception as e:
-                            print(e)
+                if playerTurn != False and selectedEnemyIdx != None:
+                    if  lastPlayerTurn == "Attack":
+                        playerTurn, theAttack = player.Attack(gameData, enemies, selectedEnemyIdx, enemyPos)
+                        if theAttack:
+                            dmgText.append(theAttack)
 
-                elif playerTurn == "Aoe" or lastPlayerTurn == "Aoe":
-                    if selectedEnemyIdx != None:
-                        try:
-                            listToAttack = [[selectedEnemyIdx, 1]]
-                            for i in range(player.AOE):
-                                i += 1
-                                listToAttack.append([selectedEnemyIdx + i, (i + 1) / 1.5])
-                                listToAttack.append([selectedEnemyIdx - i, (i + 1) / 1.5])
-                            for attack in listToAttack:
-                                if attack[0] >= 0:
-                                    if attack[0] <= len(enemies.current):
-                                        try:
-                                            player.Attack(int(player.STR / attack[1]), enemies.current[attack[0]])
-                                        except:
-                                            pass
-                            enemies.killed()
-                        except Exception as e:
-                            print(e)
+                    elif lastPlayerTurn == "Aoe":
+                        playerTurn, theAttack = player.Attack(gameData, enemies, selectedEnemyIdx, enemyPos)
+                        if theAttack:
+                            dmgText.append(theAttack)
+                        
         if not playerTurn:
             pygame.display.flip()
             for enemy in enemies.current:
