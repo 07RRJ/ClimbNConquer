@@ -27,10 +27,10 @@ def Save(player, enemies, gameData, file):
             "enemies": asdict(enemies),
             "gameData": asdict(gameData)
         }
+        with open(save_files[file], "w", encoding="utf-8") as f:
+            json.dump(saveData, f, indent=4)
     else:
-        saveData = []
-    with open(save_files[file], "w", encoding="utf-8") as f:
-        json.dump(saveData, f, indent=4)
+        Remove(file)
 
 def Load(player, enemies, gameData, file):
     try:
@@ -68,9 +68,15 @@ def GetSaveData(file):
         ]
 
         for enemy in gameData["enemiesKilled"]:
-            data.append((f"{enemy}", f"{gameData['enemiesKilled'][enemy]}"))
+            if gameData["enemiesKilled"][enemy]:
+                data.append((f"{enemy}", f"{gameData['enemiesKilled'][enemy]}"))
+            else:
+                data.append(("???", "0"))
 
         return data
     except Exception as e:
-        # print(e)
+        print(e)
         return None
+    
+def Remove(file):
+    open(save_files[file], "w").close()

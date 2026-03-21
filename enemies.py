@@ -66,16 +66,17 @@ class Enemies:
             self.amountEnemies[2] += 1
         self.possible.append(self.enemyTypes[(gameData.floor) % len(self.enemyTypes)])
 
-    def Draw(self, screen, idx, x, y, selected):
+    def Draw(self, screen, idx, xy, selected):
+        x, y = xy
         enemy = self.current[idx]
         enemy.rect = pygame.Rect(x, y, 200, 200)
         if selected:
-            screen.blit(enemy.SELECTED_IMG, (x, y))
+            screen.blit(enemy.SELECTED_IMG, (x, y+20))
         else:
-            screen.blit(enemy.IMG, (x, y))
+            screen.blit(enemy.IMG, (x, y+20))
 
-        uiElements.Bar(CO.BLACK[1], x, y+200, 200, 24, None).draw(screen)
-        uiElements.Bar(CO.GREEN[3], x+2, y+202, 196, 20, (enemy, "HP", "MAX_HP")).draw(screen)
+        uiElements.Bar(CO.BLACK[1], x, y+220, 200, 24, None).draw(screen)
+        uiElements.Bar(CO.GREEN[3], x+2, y+222, 196, 20, (enemy, "HP", "MAX_HP")).draw(screen)
 
         if enemy.MOVE == "PASS":
             displayIntent =  Data.text_font.render("Passing", True, (CO.BLACK[5]))
@@ -89,7 +90,7 @@ class Enemies:
             displayIntent =  Data.text_font.render(f"Summoning", True, (CO.BLACK[5]))
 
         displayDef =  Data.text_font.render(f"{enemy.DEF}", True, (CO.BLUE[2]))
-        screen.blit(displayDef, (x, y + 230))
+        screen.blit(displayDef, (x, y + 250))
         screen.blit(displayIntent, (x, y))
 
 # ======================================

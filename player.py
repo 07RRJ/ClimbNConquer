@@ -1,8 +1,9 @@
 from gameFuncs import Attack
 from dataclasses import dataclass, field
-from uiElements import Button, Bar, DamageText
+import uiElements
 # import pygame
 # import uiElements
+import random as rng
 
 @dataclass
 class Player:
@@ -46,40 +47,45 @@ class Player:
     #         f", REST ({self.STAMINA_REGEN})"
     #     ]
 
-    def Attack(self, gameData, enemies, selectedEnemyIdx, pos):
+    def Attack(self, gameData, enemies, selectedEnemyIdx, enemyPos):
+        x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
         self.STAMINA -= 1
-        playerTurn = True
         theAttack = False
         try:
             Attack(self.STR, enemies.current[selectedEnemyIdx])
             playerTurn = False
-            theAttack = DamageText(f"-{self.STR}", pos)
+            theAttack = uiElements.DamageText(f"-{self.STR}", (x, y))
+            enemies.killed(self, gameData)
+            return False, theAttack
         except Exception as e:
             print(e)
-        enemies.killed(self, gameData)
-        return playerTurn, theAttack
+            return True, theAttack
     
     def Aoe(self, gameData, enemies, selectedEnemyIdx, enemyPos):
-        
         theAttacks = []
         
         try:
-            listToAttack = [[selectedEnemyIdx, 1]]
+            x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
+            listToAttack = [[selectedEnemyIdx, 1, (x, y)]]
             for i in range(self.AOE):
                 i += 1
-                listToAttack.append([selectedEnemyIdx + i, (i + 1) / 1.5])
-                listToAttack.append([selectedEnemyIdx - i, (i + 1) / 1.5])
+                x, y = enemyPos[selectedEnemyIdx + i][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx + i][1] + rng.randint(50, 150)
+                listToAttack.append([selectedEnemyIdx + i, (i + 1) / 1.5, (x, y)])
+                x, y = enemyPos[selectedEnemyIdx - i][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx - i][1] + rng.randint(50, 150)
+                listToAttack.append([selectedEnemyIdx - i, (i + 1) / 1.5, (x, y)])
             for attack in listToAttack:
                 if attack[0] >= 0:
                     if attack[0] <= len(enemies.current):
                         try:
-                            Attack(gameData, int(self.STR / attack[1]), enemies.current[attack[0]])
-                            theAttacks.append(DamageText(f"-{int(self.STR / attack[1])}", pos))
+                            Attack(int(self.STR / attack[1]), enemies.current[attack[0]])
+                            theAttacks.append(uiElements.DamageText(f"-{int(self.STR / attack[1])}", attack[2]))
                         except:
                             pass
-            enemies.killed()
+            enemies.killed(self, gameData)
+            return False, theAttacks
         except Exception as e:
             print(e)
+            return True, None
 
     def Heal(self):
         self.STAMINA -= 1
@@ -87,26 +93,31 @@ class Player:
         if self.HP > self.MAX_HP:
             self.HP = self.MAX_HP
 
+    def Regen(self):
+        self.STAMINA -= 3
+        self.ACTIVE_REGEN += self.REGEN
+
     def Block(self):
         self.STAMINA -= 1
         self.DEF += self.BLOCK
+
+    def Fortress(self):
+        self.STAMINA -= 3
+        self.DEF += self.DEF * self.FORTRESS
 
     def Rest(self):
         self.STAMINA += self.STAMINA_REGEN
         if self.STAMINA > self.MAX_STAMINA:
             self.STAMINA = self.MAX_STAMINA
 
-    def Regen(self):
-        self.STAMINA -= 3
-        self.ACTIVE_REGEN += self.REGEN
-
-    def Fortress(self):
-        self.STAMINA -= 3
-        self.DEF += self.DEF * self.FORTRESS
-
     def Meditate(self):
         self.HP -= self.Meditate
         self.STAMINA += 3
 
     def StartOfTurn(self):
-        pass
+        self.STAMINA += self.STAMINA_REGEN
+        if self.STAMINA >= self.MAX_STAMINA:
+            self.STAMINA = self.MAX_STAMINA
+        self.DEF -= self.DEF // 2 + 1
+        if self.DEF < 0:
+            self.DEF = 0
