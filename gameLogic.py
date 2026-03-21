@@ -46,7 +46,7 @@ def LvlUp(screen, player):
             text, attr, increse = label
             x, y = buttonPos[rowIdx][idx]
             label = f"{text} {getattr(player, attr)} + {increse}"
-            buttons.append(Button(label, pygame.Rect(x, y, 300, 90), CO.RED[2]))
+            buttons.append(Button(label, pygame.Rect(x, y, 250, 75), CO.RED[2]))
     buttons.append(create_back_button())
 
     while player.EXP >= player.NEXT_LVL:
