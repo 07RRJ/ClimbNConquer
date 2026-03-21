@@ -234,8 +234,8 @@ def play(player, enemies, gameData, screen):
                     playerTurn = False
 
                 elif selectedIdx == 8:
-                    player.Nuke()
-                    playerTurn = False
+                    playerTurn = "Nuke"
+                    lastPlayerTurn = "Nuke"
 
                 if playerTurn != False and selectedEnemyIdx != None:
                     if  lastPlayerTurn == "Attack":
@@ -245,6 +245,12 @@ def play(player, enemies, gameData, screen):
 
                     elif lastPlayerTurn == "Aoe":
                         playerTurn, theAttacks = player.Aoe(gameData, enemies, selectedEnemyIdx, enemyPos)
+                        if theAttacks:
+                            for attack in theAttacks:
+                                dmgText.append(attack)
+
+                    elif lastPlayerTurn == "Nuke":
+                        playerTurn, theAttacks = player.Nuke(gameData, enemies, selectedEnemyIdx, enemyPos)
                         if theAttacks:
                             for attack in theAttacks:
                                 dmgText.append(attack)
@@ -260,7 +266,6 @@ def play(player, enemies, gameData, screen):
         pygame.display.flip()
 
     if not enemies.current:
-        LvlUp(screen, player)
         # Won(screen)
         return "won"
     elif player.HP <= 0:
@@ -305,9 +310,9 @@ def GameManager(file, screen):
         if result == "quit":
             return
         elif result == "dead":
-            player, enemies, gameData = Defult()
             Remove(file)
             return
+        LvlUp(screen, player)
         if gameData.part == 5:
             enemies.difficultyUp(gameData)
         gameData.part += 1

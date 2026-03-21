@@ -19,12 +19,13 @@ class Player:
 
     STR: int = 1
     AOE: int = 0
-    MULTI_ATTACK: int = 0
+    NUKE: int = 0
 
     BASE_STAMINA: float = 1
     STAMINA: int = BASE_STAMINA
     STAMINA_REGEN: float = 1
     MAX_STAMINA: int = 5
+    MEDITATE: int = 0
 
     MAX_MANA: int = 5
     MANA: float = 0
@@ -50,10 +51,8 @@ class Player:
     def Attack(self, gameData, enemies, selectedEnemyIdx, enemyPos):
         x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
         self.STAMINA -= 1
-        theAttack = False
         try:
             Attack(self.STR, enemies.current[selectedEnemyIdx])
-            playerTurn = False
             theAttack = uiElements.DamageText(f"-{self.STR}", (x, y))
             enemies.killed(self, gameData)
             return False, theAttack
@@ -63,7 +62,6 @@ class Player:
     
     def Aoe(self, gameData, enemies, selectedEnemyIdx, enemyPos):
         theAttacks = []
-        
         try:
             x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
             listToAttack = [[selectedEnemyIdx, 1, (x, y)]]
@@ -86,6 +84,21 @@ class Player:
         except Exception as e:
             print(e)
             return True, None
+
+    def Nuke(self, gameData, enemies, selectedEnemyIdx, enemyPos):
+        x, y = enemyPos[selectedEnemyIdx]
+        self.STAMINA -= 1
+        theAttacks = []
+        try:
+            for attack in range(self.NUKE):
+                dmg = max(int(self.STR // 2 * (attack + 2)), 1)
+                Attack(dmg, enemies.current[selectedEnemyIdx])
+                theAttacks.append(uiElements.DamageText(f"-{dmg}", (x+rng.randint(50, 150), y+rng.randint(50, 150))))
+            enemies.killed(self, gameData)
+            return False, theAttacks
+        except Exception as e:
+            print(e)
+            return True, theAttacks
 
     def Heal(self):
         self.STAMINA -= 1
@@ -111,8 +124,8 @@ class Player:
             self.STAMINA = self.MAX_STAMINA
 
     def Meditate(self):
-        self.HP -= self.Meditate
-        self.STAMINA += 3
+        self.HP -= self.MEDITATE
+        self.STAMINA += self.STAMINA_REGEN + self.MEDITATE
 
     def StartOfTurn(self):
         self.STAMINA += self.STAMINA_REGEN

@@ -179,9 +179,9 @@ class Boar:
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/boar.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/boar_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
 
