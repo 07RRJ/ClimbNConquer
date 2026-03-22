@@ -7,8 +7,6 @@ from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
 
-
-
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
@@ -41,9 +39,9 @@ def LvlUp(screen, player):
     )
 
     buttonPos = (
-        [(BASE_WIDTH//3 + BASE_WIDTH//7 * i, BASE_HEIGHT//7*3)     for i in range(3)],
-        [(BASE_WIDTH//3 + BASE_WIDTH//7 * i, BASE_HEIGHT//7*4)     for i in range(3)],
-        [(BASE_WIDTH//3 + BASE_WIDTH//7 * i, BASE_HEIGHT//7*5) for i in range(3)],
+        [(BASE_WIDTH//2+320*(i-1), 530)        for i in range(3)],
+        [(BASE_WIDTH//2+320*(i-1), 530+130)    for i in range(3)],
+        [(BASE_WIDTH//2+320*(i-1), 530+260)    for i in range(3)],
     )
 
     while player.EXP >= player.NEXT_LVL:
@@ -64,7 +62,7 @@ def LvlUp(screen, player):
         while loop:
             clock.tick(30)
             screen.blit(bg, (0, 0))
-            screen.blit(lvlUpText, lvlUpText.get_rect(center=(BASE_WIDTH//2, 100)))
+            screen.blit(lvlUpText, lvlUpText.get_rect(center=(BASE_WIDTH//2, 400)))
 
             for idx, btn in enumerate(buttons):
                 isSelected = (idx == selectedIdx)

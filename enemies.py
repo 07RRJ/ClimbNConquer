@@ -104,7 +104,7 @@ class Slime:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 1 + int(1 * multi)
+            self.EXP = 1 + int(2 * multi)
         
         self.MAX_HP = 4 + int(3 * multi)
         self.HP = self.MAX_HP
@@ -135,7 +135,7 @@ class Rat:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 2 + int(2 * multi)
+            self.EXP = 2 + int(3 * multi)
         
         self.MAX_HP = 3 + int(3 * multi)
         self.HP = self.MAX_HP
