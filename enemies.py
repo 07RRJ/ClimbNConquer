@@ -117,9 +117,9 @@ class Slime:
         self.ABILITIES = ["ATTACK", "PASS"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/slime_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
 
@@ -148,9 +148,9 @@ class Rat:
         self.ABILITIES = ["ATTACK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/rat.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/rat.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/rat_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/rat_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
 
@@ -179,9 +179,9 @@ class Boar:
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/boar.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/boar.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/boar_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/boar_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
 
@@ -215,9 +215,9 @@ class Goblin:
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/goblin.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/goblin.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/goblin_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/goblin_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
 
@@ -253,9 +253,9 @@ class Zombie:
         self.ABILITIES = ["PASS", "BLOCK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/zombie.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/zombie.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/zombie_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/zombie_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -282,7 +282,7 @@ class KingSlime:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP =  10 + int(20 * multi)
+            self.EXP =  20 + int(20 * multi)
         
         self.MAX_HP = 25 + int(50 * multi)
         self.HP = self.MAX_HP
@@ -296,9 +296,9 @@ class KingSlime:
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/king_slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/king_slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/king_slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/king_slime_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -323,7 +323,7 @@ class RatKing:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 10 + int(20 * multi)
+            self.EXP = 20 + int(20 * multi)
         
         self.MAX_HP = max(50, int(50 * multi))
         self.HP = self.MAX_HP
@@ -337,9 +337,9 @@ class RatKing:
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/rat_king.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/rat_king_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -362,7 +362,7 @@ class RoyalBoar:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 10 + int(20 * multi)
+            self.EXP = 20 + int(20 * multi)
         
         self.MAX_HP = 50 + int(50 * multi)
         self.HP = self.MAX_HP
@@ -371,14 +371,14 @@ class RoyalBoar:
         self.DEF = 0
         self.BLOCK = 10 + int(10 * multi)
         
-        self.STR = 5 + int(5 * multi)
+        self.STR = 2 + int(4 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK", "ATTACK"]
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/royal_boar.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/royal_boar_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -402,7 +402,7 @@ class GoblinGeneral:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 10 + int(20 * multi)
+            self.EXP = 20 + int(20 * multi)
         
         self.MAX_HP = 50 + int(50 * multi)
         self.HP = self.MAX_HP
@@ -416,9 +416,9 @@ class GoblinGeneral:
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/goblin_general.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/goblin_general_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -440,7 +440,7 @@ class Lich:
         if summoned:
             self.EXP = 0
         else:
-            self.EXP = 10 + int(20 * multi)
+            self.EXP = 20 + int(20 * multi)
         
         self.MAX_HP = 50 + int(50 * multi)
         self.HP = self.MAX_HP
@@ -450,13 +450,13 @@ class Lich:
         self.BLOCK = 1
         
         self.STR = 5 + int(5 * multi)
-        self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
+        self.ABILITIES = ["ATTACK", "ATTACK", "PASS", "PASS", "PASS", "SUMMON"]
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/lich.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/enemies/lich_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -469,4 +469,11 @@ class Lich:
         self.MOVE_IDX += 1
         if self.MOVE_IDX > len(self.ABILITIES) - 1:
             self.MOVE_IDX = 0
+        if self.MOVE == "SUMMON":
+            idx = rng.randint(1, 4)
+            if idx == 1:
+                boss = KingSlime(gameData, True)
+            elif idx == 1:
+                boss = RatKing(gameData, True)
+            enemies.current.append(boss)
         self.MOVE = self.ABILITIES[self.MOVE_IDX]

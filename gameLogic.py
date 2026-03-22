@@ -361,5 +361,6 @@ def GameManager(file, screen):
             enemies.difficultyUp(gameData)
         gameData.part += 1
         if gameData.part == 1 and not gameData.floor == 1:
+            player.HP = player.MAX_HP
             BossBuffs(player, gameData)
             Save(player, enemies, gameData, file)
