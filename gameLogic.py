@@ -6,93 +6,181 @@ from saveAndLoad import Defult, Save, Load, Remove
 from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
-# from time import sleep
 
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
+# def LvlUp(screen, player):
+#     selectedIdx = None
+
+#     lvlUpText = Data.title_font.render(f"Lvl increesed ({player.LVL} > {player.LVL+1})", True, (CO.BLACK[2]))
+
+#     labels = (
+#         (
+#             ("Max HP", "MAX_HP", 5),
+#             ("Strength", "STR", 1),
+#             ("Max Stamina", "MAX_STAMINA", 1)
+#         ),
+#         (
+#             ("Start Stamina", "BASE_STAMINA", 0.2),
+#             ("Heal", "HEAL", 1),
+#             ("Block", "BLOCK", 2)
+#         ),
+#         (
+#             ("Stamina Regen", "STAMINA_REGEN", 0.2),
+#             ("Max Mana", "MAX_MANA", 1),
+#             ("Start Mana", "MANA", 1)
+#         )
+#     )
+#     buttonPos = (
+#         [(BASE_WIDTH//4+BASE_WIDTH//6*i, BASE_HEIGHT//3)for i in range(3)],
+#         [(BASE_WIDTH//4+BASE_WIDTH//6*i, BASE_HEIGHT//2)for i in range(3)],
+#         [(BASE_WIDTH//4+BASE_WIDTH//6*i, BASE_HEIGHT//3*2)for i in range(3)],
+#     )
+
+#     while player.EXP >= player.NEXT_LVL:
+#         loop = True
+#         buttons = []
+
+#         for rowIdx, row in enumerate(labels):
+#             for idx, label in enumerate(row):
+#                 text, attr, increse = label
+#                 x, y = buttonPos[rowIdx][idx]
+#                 label = f"{text} {getattr(player, attr)} + {increse}"
+#                 buttons.append(Button(label, pygame.Rect(x, y, 250, 75), CO.RED[2]))
+
+#         while loop:
+#             clock.tick(30)
+#             screen.fill(CO.BLACK[4])
+
+#             screen.blit(lvlUpText, lvlUpText.get_rect(center=(BASE_WIDTH//2, 69)))
+
+#             for idx, btn in enumerate(buttons):
+#                 isSelected = (idx == selectedIdx)
+#                 btn.draw(screen, isSelected)
+
+#             for event in pygame.event.get():
+#                 if event.type == pygame.QUIT:
+#                     pygame.quit()
+#                     sys.exit()
+
+#                 elif event.type == pygame.MOUSEMOTION:
+#                     pos = pygame.mouse.get_pos()
+#                     isHovering = False
+#                     for idx, btn in enumerate(buttons):
+#                         if btn.rect.collidepoint(pos):
+#                             selectedIdx = idx
+#                             isHovering = True
+#                         elif isHovering == False:
+#                             selectedIdx = None
+
+#                 elif event.type == pygame.MOUSEBUTTONDOWN:
+#                     pos = pygame.mouse.get_pos()
+#                     for idx, btn in enumerate(buttons):
+#                         if btn.is_clicked(pos):
+#                             selectedIdx = idx
+#                             break
+
+#                     if selectedIdx != None:
+#                         label, attr_name, increse = labels[(selectedIdx//3)%3][selectedIdx%3]
+#                         current = getattr(player, attr_name)
+#                         setattr(player, attr_name, current + increse)
+#                         player.EXP -= player.NEXT_LVL
+#                         player.LVL += 1
+#                         player.NEXT_LVL += player.LVL
+#                         player.HP = player.MAX_HP
+#                         loop = False
+
+#             pygame.display.flip()
+
 def LvlUp(screen, player):
     selectedIdx = None
 
-    lvlUpText = Data.title_font.render(f"Lvl increesed ({player.LVL} > {player.LVL+1})", True, (CO.BLACK[2]))
+    overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 100))
+    screen.blit(overlay, (0, 0))
+
+    bg = pygame.image.load(ResourcePath("assets/img/lvl_up_board.png")).convert_alpha()
+    bg = pygame.transform.scale(bg, (BASE_WIDTH, BASE_HEIGHT))
 
     labels = (
         (
             ("Max HP", "MAX_HP", 5),
             ("Strength", "STR", 1),
-            ("Max Stamina", "MAX_STAMINA", 1)
+            ("Max Stamina", "MAX_STAMINA", 1),
         ),
         (
             ("Start Stamina", "BASE_STAMINA", 0.2),
             ("Heal", "HEAL", 1),
-            ("Block", "BLOCK", 2)
+            ("Block", "BLOCK", 2),
         ),
         (
             ("Stamina Regen", "STAMINA_REGEN", 0.2),
             ("Max Mana", "MAX_MANA", 1),
-            ("Start Mana", "MANA", 1)
-        )
+            ("Start Mana", "MANA", 1),
+        ),
     )
+
     buttonPos = (
-        [(BASE_WIDTH//4+BASE_WIDTH//6*i, BASE_HEIGHT//3)for i in range(3)],
-        [(BASE_WIDTH//4+BASE_WIDTH//6*i, BASE_HEIGHT//2)for i in range(3)],
-        [(BASE_WIDTH//4+BASE_WIDTH//6*i, BASE_HEIGHT//3*2)for i in range(3)],
+        [(BASE_WIDTH//3 + BASE_WIDTH//7 * i, BASE_HEIGHT//7*3)     for i in range(3)],
+        [(BASE_WIDTH//3 + BASE_WIDTH//7 * i, BASE_HEIGHT//7*4)     for i in range(3)],
+        [(BASE_WIDTH//3 + BASE_WIDTH//7 * i, BASE_HEIGHT//7*5) for i in range(3)],
     )
-
-    buttons = []
-
-    for rowIdx, row in enumerate(labels):
-        for idx, label in enumerate(row):
-            text, attr, increse = label
-            x, y = buttonPos[rowIdx][idx]
-            label = f"{text} {getattr(player, attr)} + {increse}"
-            buttons.append(Button(label, pygame.Rect(x, y, 250, 75), CO.RED[2]))
-    buttons.append(create_back_button())
 
     while player.EXP >= player.NEXT_LVL:
-        clock.tick(30)
-        screen.fill(CO.BLACK[4])
+        loop = True
+        buttons = []
 
-        screen.blit(lvlUpText, lvlUpText.get_rect(center=(BASE_WIDTH//2, 69)))
+        lvlUpText = Data.title_font.render(f"Lvl increesed ({player.LVL} > {player.LVL+1})", True, CO.BLACK[2])
 
-        for idx, btn in enumerate(buttons):
-            isSelected = (idx == selectedIdx)
-            btn.draw(screen, isSelected)
+        for rowIdx, row in enumerate(labels):
+            for idx, label in enumerate(row):
+                text, attr, increse = label
+                x, y = buttonPos[rowIdx][idx]
+                current_val = getattr(player, attr)
+                full_label = f"{text}: {current_val} + {increse}"
+                btn_rect = pygame.Rect(x - 125, y - 37, 250, 75)
+                buttons.append(Button(full_label, btn_rect, CO.BLACK[3]))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        while loop:
+            clock.tick(30)
+            screen.blit(bg, (0, 0))
+            screen.blit(lvlUpText, lvlUpText.get_rect(center=(BASE_WIDTH//2, 100)))
 
-            elif event.type == pygame.MOUSEMOTION:
-                pos = pygame.mouse.get_pos()
-                isHovering = False
-                for idx, btn in enumerate(buttons):
-                    if btn.rect.collidepoint(pos):
-                        selectedIdx = idx
-                        isHovering = True
-                    elif isHovering == False:
-                        selectedIdx = None
+            for idx, btn in enumerate(buttons):
+                isSelected = (idx == selectedIdx)
+                btn.draw(screen, isSelected)
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                for idx, btn in enumerate(buttons):
-                    if btn.is_clicked(pos):
-                        selectedIdx = idx
-                        break
-            
-                if selectedIdx == len(buttons) - 1:
-                    return "quit"
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
-                elif selectedIdx != None:
-                    label, attr_name, increse = labels[(selectedIdx//3)%3][selectedIdx%3]
-                    current = getattr(player, attr_name)
-                    setattr(player, attr_name, current + increse)
-                    player.EXP -= player.NEXT_LVL
-                    player.LVL += 1
-                    player.NEXT_LVL += player.LVL
+                if event.type == pygame.MOUSEMOTION:
+                    pos = pygame.mouse.get_pos()
+                    selectedIdx = None
+                    for idx, btn in enumerate(buttons):
+                        if btn.rect.collidepoint(pos):
+                            selectedIdx = idx
+                            break
 
-        pygame.display.flip()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if selectedIdx is not None:
+                        row = selectedIdx // 3
+                        col = selectedIdx % 3
+                        label, attr_name, increse = labels[row][col]
+
+                        current = getattr(player, attr_name)
+                        setattr(player, attr_name, current + increse)
+
+                        player.EXP -= player.NEXT_LVL
+                        player.LVL += 1
+                        player.NEXT_LVL += player.LVL
+                        player.HP = player.MAX_HP
+
+                        loop = False
+
+            pygame.display.flip()
 
 def play(player, enemies, gameData, screen):
     playerTurn = True
@@ -230,7 +318,7 @@ def play(player, enemies, gameData, screen):
                         selectedIdx = kb[1]
 
             if (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN) and selectedIdx != None:
-                if selectedIdx == len(buttons) - 1 or selectedIdx == "quit":
+                if (selectedIdx == len(buttons) - 1 and event.type == pygame.MOUSEBUTTONDOWN) or selectedIdx == "quit":
                     return "quit"
 
                 # elif playerTurn == True:
@@ -301,10 +389,8 @@ def play(player, enemies, gameData, screen):
         pygame.display.flip()
 
     if not enemies.current:
-        # Won(screen)
         return "won"
     elif player.HP <= 0:
-        # Dead(screen)
         return "dead"
 
 def Won(screen):
@@ -314,6 +400,22 @@ def Won(screen):
     while True:
         clock.tick(30)
         screen.fill(CO.GREEN[2])
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            pos = pygame.mouse.get_pos()
+            selectedIdx = None
+            selectedEnemyIdx = None
+            for idx, btn in enumerate(buttons):
+                if btn.rect.collidepoint(pos):
+                    selectedIdx = idx
+
+            if (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN) and selectedIdx != None:
+                if selectedIdx == len(buttons) - 1 or selectedIdx == "quit":
+                    return "quit"
 
         pygame.display.flip()
 
@@ -331,10 +433,10 @@ def Dead(screen):
 
 def BossBuffs(player, gameData):
     player.AOE = gameData.enemiesKilled["King Slime"]
-    player.REGEN = gameData.enemiesKilled["Rat King"]
+    player.REGEN = gameData.enemiesKilled["Rat King"] * 5
     player.FORTRESS = gameData.enemiesKilled["Royal Boar"]
-    player.MEDITATE = gameData.enemiesKilled["Goblin General"]
-    player.NUKE = gameData.enemiesKilled["Lich"]
+    player.MEDITATE = gameData.enemiesKilled["Goblin General"] * 3
+    player.NUKE = gameData.enemiesKilled["Lich"] * 2
 
 def GameManager(file, screen):
     runing = True

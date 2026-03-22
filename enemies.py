@@ -250,7 +250,7 @@ class Zombie:
         self.BLOCK = 1
 
         self.STR = 2 + int(2 * multi)
-        self.ABILITIES = ["PASS", "BLOCK"]
+        self.ABILITIES = ["PASS", "ATTACK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
         self.IMG = pygame.image.load(ResourcePath("assets/img/enemies/zombie.png")).convert_alpha()

@@ -49,8 +49,8 @@ class Player:
     #     ]
 
     def Attack(self, gameData, enemies, selectedEnemyIdx, enemyPos):
-        x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
         self.STAMINA -= 1
+        x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
         try:
             Attack(self.STR, enemies.current[selectedEnemyIdx])
             theAttack = uiElements.DamageText(f"-{self.STR}", (x, y))
@@ -61,6 +61,7 @@ class Player:
             return True, theAttack
     
     def Aoe(self, gameData, enemies, selectedEnemyIdx, enemyPos):
+        self.STAMINA -= 3
         theAttacks = []
         try:
             x, y = enemyPos[selectedEnemyIdx][0] + rng.randint(50, 150), enemyPos[selectedEnemyIdx][1] + rng.randint(50, 150)
@@ -86,8 +87,8 @@ class Player:
             return True, None
 
     def Nuke(self, gameData, enemies, selectedEnemyIdx, enemyPos):
+        self.STAMINA -= 5
         x, y = enemyPos[selectedEnemyIdx]
-        self.STAMINA -= 1
         theAttacks = []
         try:
             for attack in range(self.NUKE):
@@ -108,7 +109,7 @@ class Player:
 
     def Regen(self):
         self.STAMINA -= 3
-        self.ACTIVE_REGEN += self.REGEN
+        self.ACTIVE_REGEN += self.REGEN * 5
 
     def Block(self):
         self.STAMINA -= 1
@@ -116,7 +117,7 @@ class Player:
 
     def Fortress(self):
         self.STAMINA -= 3
-        self.DEF += self.DEF * self.FORTRESS
+        self.DEF += self.DEF * self.FORTRESS * 3
 
     def Rest(self):
         self.STAMINA += self.STAMINA_REGEN
