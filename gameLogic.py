@@ -18,7 +18,7 @@ def LvlUp(screen, player):
 
     labels = (
         (
-            ("Max HP", "MAX_HP", 2),
+            ("Max HP", "MAX_HP", 5),
             ("Strength", "STR", 1),
             ("Max Stamina", "MAX_STAMINA", 1)
         ),
@@ -108,21 +108,48 @@ def play(player, enemies, gameData, screen):
     block = pygame.image.load(ResourcePath("assets/img/block.png")).convert_alpha()
     block = pygame.transform.scale(block, (78, 78))
 
+    ButtonRect = (
+        pygame.Rect(32, BASE_HEIGHT-62, 100, 30),
+        pygame.Rect(164, BASE_HEIGHT-62, 100, 30),
+        pygame.Rect(296, BASE_HEIGHT-62, 100, 30),
+        pygame.Rect(428, BASE_HEIGHT-62, 100, 30),
+        pygame.Rect(32, BASE_HEIGHT-102, 100, 30),
+        pygame.Rect(164, BASE_HEIGHT-102, 100, 30),
+        pygame.Rect(296, BASE_HEIGHT-102, 100, 30),
+        pygame.Rect(428, BASE_HEIGHT-102, 100, 30),
+        pygame.Rect(32, BASE_HEIGHT-144, 100, 30)
+    )
+
     buttons = [
-        # row 1
-        Button(f"attack", pygame.Rect(32, BASE_HEIGHT-62, 100, 30), CO.RED[2]),
-        Button(f"heal", pygame.Rect(164, BASE_HEIGHT-62, 100, 30), CO.GREEN[2]),
-        Button(f"block", pygame.Rect(296, BASE_HEIGHT-62, 100, 30), CO.BLUE[2]),
-        Button(f"rest", pygame.Rect(428, BASE_HEIGHT-62, 100, 30), CO.YELLOW[2]),
-        # row 2
-        Button(f"aoe", pygame.Rect(32, BASE_HEIGHT-102, 100, 30), CO.RED[2]),
-        Button(f"regen", pygame.Rect(164, BASE_HEIGHT-102, 100, 30), CO.GREEN[2]),
-        Button(f"fortress", pygame.Rect(296, BASE_HEIGHT-102, 100, 30), CO.BLUE[2]),
-        Button(f"meditate", pygame.Rect(428, BASE_HEIGHT-102, 100, 30), CO.YELLOW[2]),
-        # row 3
-        Button(f"nuke", pygame.Rect(32, BASE_HEIGHT-144, 100, 30), CO.RED[2]),
-        create_back_button()
+        Button(f"attack", ButtonRect[0], CO.RED[2]),
+        Button(f"heal", ButtonRect[1], CO.GREEN[2]),
+        Button(f"block", ButtonRect[2], CO.BLUE[2]),
+        Button(f"rest", ButtonRect[3], CO.YELLOW[2])
     ]
+
+    inactiveButtons = []
+
+    if gameData.enemiesKilled["King Slime"]:
+        buttons.append(Button(f"aoe", ButtonRect[4], CO.RED[2]))
+    else:
+        inactiveButtons.append(Button(f"???", ButtonRect[4], CO.BLACK[1]))
+    if gameData.enemiesKilled["Rat King"]:
+        buttons.append(Button(f"regen", ButtonRect[5], CO.GREEN[2]))
+    else:
+        inactiveButtons.append(Button(f"???", ButtonRect[5], CO.BLACK[1]))
+    if gameData.enemiesKilled["Royal Boar"]:
+        buttons.append(Button(f"fortress", ButtonRect[6], CO.BLUE[2]))
+    else:
+        inactiveButtons.append(Button(f"???", ButtonRect[6], CO.BLACK[1]))
+    if gameData.enemiesKilled["Goblin General"]:
+        buttons.append(Button(f"meditate", ButtonRect[7], CO.YELLOW[2]))
+    else:
+        inactiveButtons.append(Button(f"???", ButtonRect[7], CO.BLACK[1]))
+    if gameData.enemiesKilled["Lich"]:
+        buttons.append(Button(f"nuke", ButtonRect[8], CO.RED[2]))
+    else:
+        inactiveButtons.append(Button(f"???", ButtonRect[8], CO.BLACK[1]))
+    buttons.append(create_back_button())
 
     statusBars = [
         (Bar(CO.BLACK[1], 30, 30, 304, 34, None)),
@@ -145,6 +172,7 @@ def play(player, enemies, gameData, screen):
         floor =  Data.title_font.render(f"Boss battle", True, (CO.BLACK[2]))
     else:
         floor =  Data.title_font.render(f"floor {gameData.floor}-{gameData.part}", True, (CO.BLACK[2]))
+    turn =  Data.text_font.render(f"turn: {gameData.turn}", True, (CO.BLACK[2]))
 
     while player.HP > 0 and enemies.current:
         clock.tick(30)
@@ -154,10 +182,15 @@ def play(player, enemies, gameData, screen):
 
         screen.blit(displayDef, displayDef.get_rect(center=(389, 69)))
         screen.blit(floor, (200, 200))
+        screen.blit(turn, (200, 300))
 
         for idx, btn in enumerate(buttons):
             isSelected = (idx == selectedIdx)
             btn.draw(screen, isSelected)
+        
+        if inactiveButtons:
+            for button in inactiveButtons:
+                button.draw(screen)
 
         for idx, enemy in enumerate(enemies.current):
             isSelected = (idx == selectedEnemyIdx)
@@ -259,9 +292,11 @@ def play(player, enemies, gameData, screen):
             pygame.display.flip()
             for enemy in enemies.current:
                 enemy.Move(player, enemies, gameData)
+            gameData.turn += 1
+            player.StartOfTurn()
+            turn =  Data.text_font.render(f"turn: {gameData.turn}", True, (CO.BLACK[2]))
             displayDef =  Data.text_font.render(f"{player.DEF}", True, (CO.BLUE[2]))
             playerTurn = True
-            player.StartOfTurn()
 
         pygame.display.flip()
 
@@ -294,6 +329,13 @@ def Dead(screen):
     # death in endless should be separate
         pygame.display.flip()
 
+def BossBuffs(player, gameData):
+    player.AOE = gameData.enemiesKilled["King Slime"]
+    player.REGEN = gameData.enemiesKilled["Rat King"]
+    player.FORTRESS = gameData.enemiesKilled["Royal Boar"]
+    player.MEDITATE = gameData.enemiesKilled["Goblin General"]
+    player.NUKE = gameData.enemiesKilled["Lich"]
+
 def GameManager(file, screen):
     runing = True
     player, enemies, gameData = Defult()
@@ -312,10 +354,12 @@ def GameManager(file, screen):
         elif result == "dead":
             Remove(file)
             return
+        gameData.totalTurns += gameData.turn
+        gameData.turn = 0
         LvlUp(screen, player)
         if gameData.part == 5:
             enemies.difficultyUp(gameData)
         gameData.part += 1
         if gameData.part == 1 and not gameData.floor == 1:
-            print(f"saved {gameData.floor}-{gameData.part}")
+            BossBuffs(player, gameData)
             Save(player, enemies, gameData, file)

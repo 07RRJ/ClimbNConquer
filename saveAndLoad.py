@@ -75,8 +75,8 @@ def GetSaveData(file):
 
         return data
     except Exception as e:
-        print(e)
+        # print(e)
         return None
-    
+
 def Remove(file):
     open(save_files[file], "w").close()

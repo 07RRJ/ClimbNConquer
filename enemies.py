@@ -215,9 +215,9 @@ class Goblin:
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/goblin.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/goblin_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
 
@@ -253,9 +253,9 @@ class Zombie:
         self.ABILITIES = ["PASS", "BLOCK"]
         self.MOVE = rng.choice(self.ABILITIES)
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/zombie.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/zombie_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
@@ -296,9 +296,9 @@ class KingSlime:
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
-        self.IMG = pygame.image.load(ResourcePath("assets/img/slime.png")).convert_alpha()
+        self.IMG = pygame.image.load(ResourcePath("assets/img/king_slime.png")).convert_alpha()
         self.IMG = pygame.transform.scale(self.IMG, (200, 200))
-        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/slime_selected.png")).convert_alpha()
+        self.SELECTED_IMG = pygame.image.load(ResourcePath("assets/img/king_slime_selected.png")).convert_alpha()
         self.SELECTED_IMG = pygame.transform.scale(self.SELECTED_IMG, (200, 200))
         self.rect = None
     
