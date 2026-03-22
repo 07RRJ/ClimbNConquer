@@ -7,6 +7,8 @@ from uiElements import Button, Bar, DamageText, create_back_button
 from gameFuncs import ResourcePath
 from uiData import Data
 
+
+
 clock = pygame.time.Clock()
 BASE_WIDTH, BASE_HEIGHT = 1920, 1080
 
