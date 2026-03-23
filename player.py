@@ -14,7 +14,7 @@ class Player:
     ACTIVE_REGEN: int = 0
 
     DEF: int = 0
-    BLOCK: int = 3
+    BLOCK: int = 10
     FORTRESS: int = 0
 
     STR: int = 1

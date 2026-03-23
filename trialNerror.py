@@ -1,4 +1,8 @@
-# from msvcrt import getwch
+from msvcrt import getwch
+import random as rng
+
+# for i in range(10):
+#     print(rng.randint(1, 4))
 
 # variable = getwch()
 # print(variable)

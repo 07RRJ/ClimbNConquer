@@ -66,10 +66,13 @@ class Bar:
         if self.text:
             value = getattr(self.text[0], self.text[1])
             value1 = getattr(self.text[0], self.text[2])
-            rect = pygame.Rect(self.x, self.y, self.width*value//value1, self.height)
+            if value > value1:
+                rect = pygame.Rect(self.x, self.y, self.width, self.height)
+            else:
+                rect = pygame.Rect(self.x, self.y, self.width*value//value1, self.height)
             pygame.draw.rect(screen, self.colour, rect)
             
-            text = Data.text_font.render(f"{value}/{value1}", True, (CO.BLACK[3]))
+            text = Data.text_font.render(f"{round(value, 2)}/{round(value1, 2)}", True, (CO.BLACK[3]))
             screen.blit(text, text.get_rect(center=(self.x+self.width//2, self.y+self.height//2)))
         else:
             rect = pygame.Rect(self.x, self.y, self.width, self.height)
@@ -82,14 +85,12 @@ class DamageText:
         self.start_time = time.time()
         self.duration = duration
         self.text = Data.text_font.render(text, True, (CO.RED[2]))
-        # self.rect = self.image.get_rect(center=(self.x, self.y))
 
     @property
     def alive(self):
         return time.time() - self.start_time < self.duration
 
     def draw(self, surface):
-        # self.rect = self.image.get_rect(center=(self.x, self.y))
         surface.blit(self.text, (self.x, self.y))
         self.y -= 10
 

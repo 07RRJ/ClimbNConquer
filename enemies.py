@@ -281,15 +281,17 @@ class KingSlime:
         multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
+            self.MAX_HP = (25 + int(50 * multi)) // 2
+            self.BLOCK = (5 + int(10 * multi)) // 2
         else:
-            self.EXP =  20 + int(20 * multi)
+            self.EXP = 30 + int(20 * multi)
+            self.MAX_HP = 25 + int(50 * multi)
+            self.BLOCK = 5 + int(10 * multi)
         
-        self.MAX_HP = 25 + int(50 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
 
         self.DEF = 0
-        self.BLOCK = 5 + int(10 * multi)
         
         self.STR = 1
         self.ABILITIES = ["SUMMON", "BLOCK", "PASS", "PASS"]
@@ -322,17 +324,18 @@ class RatKing:
         multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
+            self.MAX_HP = (max(50, int(50 * multi))) // 2
+            self.STR = (5 + int(5 * multi)) // 2
         else:
-            self.EXP = 20 + int(20 * multi)
-        
-        self.MAX_HP = max(50, int(50 * multi))
+            self.EXP = 30 + int(20 * multi)
+            self.MAX_HP = max(50, int(50 * multi))
+            self.STR = 5 + int(5 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
         
         self.DEF = 0
         self.BLOCK = 1
 
-        self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
@@ -361,17 +364,20 @@ class RoyalBoar:
         multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
+            self.MAX_HP = (50 + int(50 * multi)) // 2
+            self.BLOCK = (10 + int(10 * multi)) // 2
+            self.STR = (2 + int(4 * multi)) // 2
         else:
-            self.EXP = 20 + int(20 * multi)
+            self.EXP = 30 + int(20 * multi)
+            self.MAX_HP = 50 + int(50 * multi)
+            self.BLOCK = 10 + int(10 * multi)
+            self.STR = 2 + int(4 * multi)
         
-        self.MAX_HP = 50 + int(50 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
         
         self.DEF = 0
-        self.BLOCK = 10 + int(10 * multi)
         
-        self.STR = 2 + int(4 * multi)
         self.ABILITIES = ["PASS", "BLOCK", "ATTACK", "ATTACK"]
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
@@ -401,17 +407,19 @@ class GoblinGeneral:
         multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
+            self.MAX_HP = (50 + int(50 * multi)) // 2
+            self.STR = (5 + int(5 * multi)) // 2
         else:
-            self.EXP = 20 + int(20 * multi)
+            self.EXP = 30 + int(20 * multi)
+            self.MAX_HP = 50 + int(50 * multi)
+            self.STR = 5 + int(5 * multi)
         
-        self.MAX_HP = 50 + int(50 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
         
         self.DEF = 0
         self.BLOCK = 1
         
-        self.STR = 5 + int(5 * multi)
         self.ABILITIES = ["ATTACK", "ATTACK", "PASS"]
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
@@ -439,18 +447,20 @@ class Lich:
         multi = gameData.floor / 2
         if summoned:
             self.EXP = 0
+            self.MAX_HP = (50 + int(50 * multi)) // 2
+            self.STR = (5 + int(5 * multi)) // 2
         else:
-            self.EXP = 20 + int(20 * multi)
+            self.EXP = 30 + int(20 * multi)
+            self.MAX_HP = 50 + int(50 * multi)
+            self.STR = 5 + int(5 * multi)
         
-        self.MAX_HP = 50 + int(50 * multi)
         self.HP = self.MAX_HP
         self.HEAL = 1
         
         self.DEF = 0
         self.BLOCK = 1
         
-        self.STR = 5 + int(5 * multi)
-        self.ABILITIES = ["ATTACK", "ATTACK", "PASS", "PASS", "PASS", "SUMMON"]
+        self.ABILITIES = ["ATTACK", "ATTACK", "PASS", "PASS", "PASS", "PASS", "PASS", "SUMMON"]
         self.MOVE_IDX = 0
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
 
@@ -473,7 +483,11 @@ class Lich:
             idx = rng.randint(1, 4)
             if idx == 1:
                 boss = KingSlime(gameData, True)
-            elif idx == 1:
+            elif idx == 2:
                 boss = RatKing(gameData, True)
+            elif idx == 3:
+                boss = RoyalBoar(gameData, True)
+            elif idx == 4:
+                boss = GoblinGeneral(gameData, True)
             enemies.current.append(boss)
         self.MOVE = self.ABILITIES[self.MOVE_IDX]
